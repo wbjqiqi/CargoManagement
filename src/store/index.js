@@ -1,15 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import * as actions from './actions'
-// import * as getters from './getters/getters'
-// import navBar from './modules/nav-bar'
+import Login from './modules/login'
+import * as actions from './actions'
+import * as getters from './getters'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
-  // actions: {
-  //   ...actions,
-  // },
-  // getters,
-  // modules: {
-  // }
+  getters,
+  actions,
+  modules: {
+    Login
+  }
 })

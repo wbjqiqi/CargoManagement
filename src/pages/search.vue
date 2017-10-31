@@ -1,22 +1,29 @@
 <template>
   <div class="search">
-    <p>请输入搜索内容：</p>
-    <el-row>
-      <el-col :span="24" id="input">
-        <el-autocomplete
-          v-model="state4"
-          :fetch-suggestions="querySearchAsync"
-          placeholder="请输入内容"
-          @select="handleSelect"
-        >
-          <el-select v-model="searchType" slot="prepend" placeholder="搜索">
-            <el-option label="搜索" value="1"></el-option>
-            <el-option label="高级搜索" value="2"></el-option>
-          </el-select>
-          <el-button slot="append" icon="search"></el-button>
-        </el-autocomplete>
+    <div style="width: 100%; position: fixed; top: 0; z-index: 3;background-color: #fff;">
+      <el-col :span="12" :offset="6" >
+        <p>请输入搜索内容：</p>
+        <el-row>
+          <el-col :span="24" id="input">
+            <el-autocomplete
+              v-model="state4"
+              :fetch-suggestions="querySearchAsync"
+              placeholder="请输入内容"
+              @select="handleSelect"
+            >
+              <el-select v-model="searchType" slot="prepend" placeholder="搜索">
+                <el-option label="搜索" value="1"></el-option>
+                <el-option label="高级搜索" value="2"></el-option>
+              </el-select>
+              <el-button slot="append" icon="search"></el-button>
+            </el-autocomplete>
+          </el-col>
+        </el-row>
       </el-col>
-    </el-row>
+    </div>
+    <div class="search-router">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -35,6 +42,7 @@
     restaurants = []
     state4 = ''
     timeout = null
+
     // methods
     loadAll () {
       return [
@@ -77,7 +85,7 @@
   }
 </script>
 <style lang="less">
-  .search {
+  .search.active {
     position: absolute;
     top: 0;
     left: 0;
@@ -88,10 +96,15 @@
     margin: auto;
   }
 
+  .search-router{
+    margin-top: 100px;
+  }
+
   .el-select .el-input {
     width: 110px;
   }
-  .el-autocomplete{
+
+  .el-autocomplete {
     display: block;
   }
 </style>
