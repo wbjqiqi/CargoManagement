@@ -1,87 +1,72 @@
 <template>
   <el-table
-    :data="tableData5"
+    :data="Goods.goods"
     style="width: 100%">
     <el-table-column type="expand">
       <template slot-scope="props">
-        <el-form label-position="left" inline class="demo-table-expand">
-          <el-form-item label="商品名称">
-            <span>{{ props.row.name }}</span>
-          </el-form-item>
-          <el-form-item label="所属店铺">
-            <span>{{ props.row.shop }}</span>
-          </el-form-item>
-          <el-form-item label="商品 ID">
-            <span>{{ props.row.id }}</span>
-          </el-form-item>
-          <el-form-item label="店铺 ID">
-            <span>{{ props.row.shopId }}</span>
-          </el-form-item>
-          <el-form-item label="商品分类">
-            <span>{{ props.row.category }}</span>
-          </el-form-item>
-          <el-form-item label="店铺地址">
-            <span>{{ props.row.address }}</span>
-          </el-form-item>
-          <el-form-item label="商品描述">
-            <span>{{ props.row.desc }}</span>
-          </el-form-item>
-        </el-form>
+        <el-col :span="18">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item label="商品名称">
+              <span>{{ props.row.name }}</span>
+            </el-form-item>
+            <el-form-item label="商品品牌">
+              <span>{{ props.row.brand }}</span>
+            </el-form-item>
+            <el-form-item label="规格">
+              <span>{{ props.row.specific }}</span>
+            </el-form-item>
+            <el-form-item label="数量">
+              <span>{{ props.row.number }}</span>
+            </el-form-item>
+            <el-form-item label="价格">
+              <span>{{ props.row.price }}</span>
+            </el-form-item>
+            <el-form-item label="备注">
+              <span>{{ props.row.remark }}</span>
+            </el-form-item>
+            <el-form-item label="库存数量">
+              <span>{{ props.row.rest }}</span>
+            </el-form-item>
+          </el-form>
+        </el-col>
+        <el-col :span="6">
+          <img src="../assets/images/th.jpg" alt="" style="height: 180px">
+        </el-col>
       </template>
-    </el-table-column>
-    <el-table-column
-      label="商品 ID"
-      prop="id">
     </el-table-column>
     <el-table-column
       label="商品名称"
       prop="name">
     </el-table-column>
     <el-table-column
-      label="描述"
-      prop="desc">
+      label="商品品牌"
+      prop="brand">
+    </el-table-column>
+    <el-table-column
+      label="库存数量"
+      prop="rest">
     </el-table-column>
   </el-table>
 </template>
 <script lang="ts">
   import Vue from 'vue'
+  import { mapState } from 'vuex'
   import Component from 'vue-class-component'
 
-  @Component({})
+  @Component({
+    computed: mapState(['Goods'])
+  })
   export default class searchMain extends Vue {
     // data
     tableData5 = [{
       id: '12987122',
       name: '好滋好味鸡蛋仔',
-      category: '江浙小吃、小吃零食',
-      desc: '荷兰优质淡奶，奶香浓而不腻',
-      address: '上海市普陀区真北路',
-      shop: '王小虎夫妻店',
-      shopId: '10333'
-    }, {
-      id: '12987123',
-      name: '好滋好味鸡蛋仔',
-      category: '江浙小吃、小吃零食',
-      desc: '荷兰优质淡奶，奶香浓而不腻',
-      address: '上海市普陀区真北路',
-      shop: '王小虎夫妻店',
-      shopId: '10333'
-    }, {
-      id: '12987125',
-      name: '好滋好味鸡蛋仔',
-      category: '江浙小吃、小吃零食',
-      desc: '荷兰优质淡奶，奶香浓而不腻',
-      address: '上海市普陀区真北路',
-      shop: '王小虎夫妻店',
-      shopId: '10333'
-    }, {
-      id: '12987126',
-      name: '好滋好味鸡蛋仔',
-      category: '江浙小吃、小吃零食',
-      desc: '荷兰优质淡奶，奶香浓而不腻',
-      address: '上海市普陀区真北路',
-      shop: '王小虎夫妻店',
-      shopId: '10333'
+      brand: '江浙小吃、小吃零食',
+      remark: '荷兰优质淡奶，奶香浓而不腻',
+      price: '上海市普陀区真北路',
+      number: '王小虎夫妻店',
+      rest: '10333',
+      specific: '133'
     }]
 
     // method
@@ -91,6 +76,11 @@
 
     filterTag (value, row) {
       return row.tag === value
+    }
+
+    // created
+    created () {
+      this.$store.dispatch('getAllGoods')
     }
   }
 </script>
