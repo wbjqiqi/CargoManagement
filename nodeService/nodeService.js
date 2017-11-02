@@ -43,7 +43,7 @@ app.route('/goods')
 app.route('/goods/:name')
   .get((req, res) => {
     let name  = req.params.name
-    connection.query('SELECT * FROM GOODS_MESSAGE WHERE name = `%' + name + '%`', function (error, results, fields) {
+    connection.query('SELECT name FROM GOODS_MESSAGE WHERE name LIKE "%' + name + '%"', function (error, results, fields) {
       if (error) throw error
       res.status(200)
       res.send(results)

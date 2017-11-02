@@ -18,7 +18,9 @@ import axios from 'axios'
 import * as config from './config'
 
 const getAllGoods = () => axios.get(config.MY_PHP_SERVICE + '/goods')
+const searchByName = (name) => axios.get(config.MY_PHP_SERVICE + '/goods/' + name)
 
 export {
-  getAllGoods
+  getAllGoods,
+  searchByName
 }

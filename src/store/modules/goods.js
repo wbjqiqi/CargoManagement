@@ -4,7 +4,8 @@
 import * as types from '../mutation-types'
 
 const state = {
-  goods: []
+  goods: [],
+  goodsNameList: []
 }
 
 const mutations = {
@@ -19,6 +20,15 @@ const mutations = {
   // },
   [types.GET_GOODS] (state, allGoods) {
     state.goods = allGoods
+  },
+  [types.GET_GOODS_LIST] (state, goodsListRes) {
+    let goodList = []
+    goodsListRes.map(goods => {
+      goodList.push({
+        value: goods.name
+      })
+    })
+    state.goodsNameList = goodList
   }
 }
 export default {
