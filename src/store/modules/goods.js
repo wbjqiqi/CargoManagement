@@ -25,6 +25,7 @@ const mutations = {
     let goodList = []
     goodsListRes.map(goods => {
       goodList.push({
+        id: goods.id,
         value: goods.name
       })
     })

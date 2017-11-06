@@ -9,8 +9,7 @@
               v-model="state4"
               :fetch-suggestions="querySearchAsync"
               placeholder="请输入内容"
-              @select="handleSelect"
-            >
+              @select="handleSelect">
               <el-select v-model="searchType" slot="prepend" placeholder="搜索">
                 <el-option label="搜索" value="1"></el-option>
                 <el-option label="高级搜索" value="2"></el-option>
@@ -59,7 +58,7 @@
     }
 
     handleSelect (item) {
-      console.log(item)
+      this.$router.push({name: 'searchMain', params: {cargoId: item.id}})
     }
   }
 </script>
