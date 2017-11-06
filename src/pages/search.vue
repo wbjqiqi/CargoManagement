@@ -21,17 +21,25 @@
       </el-col>
     </div>
     <div class="search-router">
-      <router-view></router-view>
+      <router-view @edit-cargo="editCargo"></router-view>
     </div>
+    <CargoDialod :isOpenDialog="isOpenDialog" :isEdit="isEdit" :goods="goods" @closeDialog="closeThisDialog" @submitCargo="submitCargo"></CargoDialod>
   </div>
 </template>
 <script lang="ts">
   import Vue from 'vue'
-  import { mapState } from 'vuex'
+  import { mapState, mapGetters } from 'vuex'
   import Component from 'vue-class-component'
 
+  import CargoDialod from './cargo-main/cargo-dialog.vue'
   @Component({
-    computed: mapState(['Goods'])
+    computed: {
+      ...mapState(['Goods']),
+      ...mapGetters(['isOpenDialog'])
+    },
+    components: {
+      CargoDialod
+    }
   })
   export default class search extends Vue {
     // data
@@ -39,6 +47,18 @@
     searchType = ''
     state4 = ''
     timeout = null
+    goods = {
+      id: '',
+      name: '',
+      brand: '',
+      specific: '',
+      number: '',
+      proce: '',
+      remark: '',
+      rest: '',
+      image: ''
+    }
+    isEdit = false
 
     // methods
     querySearchAsync (queryString, cb) {
@@ -57,10 +77,51 @@
     searchById (id) {
       this.$store.dispatch('searchById', id)
     }
-
     handleSelect (item) {
       this.searchById(item.id)
       this.$router.push({name: 'searchMain', params: {cargoId: item.id}})
+    }
+    editCargo (id) {
+      this.searchById(id)
+      this.goods = this['Goods'].goods[0]
+      this.isEdit = true
+      this.$store.dispatch('openDialog')
+    }
+    closeThisDialog () {
+      this.$store.dispatch('closeDialog')
+    }
+    submitCargo (info) {
+      let data = info.model
+      if (info.isEdit) {
+        this.$store.dispatch('updateCargo', data).then(() => {
+          this.closeThisDialog()
+          this['$message']({
+            type: 'success',
+            message: '更新成功'
+          })
+        }).catch(err => {
+          this['$message']({
+            type: 'error',
+            message: '更新失败'
+          })
+          console.log(err)
+        })
+      } else {
+        delete data.id
+        this.$store.dispatch('newCargo', data).then((res) => {
+          this.closeThisDialog()
+          this['$message']({
+            type: 'success',
+            message: '添加成功'
+          })
+        }).catch(err => {
+          this['$message']({
+            type: 'error',
+            message: '添加失败'
+          })
+          console.log(err)
+        })
+      }
     }
   }
 </script>

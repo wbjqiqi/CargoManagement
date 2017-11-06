@@ -26,3 +26,20 @@ export const searchById = ({commit}, id) => {
     })
   })
 }
+
+export const updateCargo = ({commit}, options) => {
+  return new Promise((resolve, reject) => {
+    api.updateCargo(options).then((res) => {
+      commit(types.UPDATE_GOODS, options)
+      resolve()
+    })
+  })
+}
+
+export const closeDialog = ({commit}) => {
+  commit(types.CLOSE_DIALOG)
+}
+
+export const openDialog = ({commit}) => {
+  commit(types.OPEN_DIALOG)
+}

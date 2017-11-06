@@ -60,6 +60,31 @@ app.route('/goods/id/:cargoId')
       })
     })
   })
+  .post((req, res) => {
+    var id = req.params.cargoId
+    var options = req.body;
+    console.log(options)
+    var str = 'UPDATE `goods_message` SET '
+    for (i in options) {
+      str += "`" + i + "`='" + options[i] + "',"
+    }
+    str = str.substring(0, str.length - 1)
+    connection.query(str + ' WHERE id=' + id, (error, results, failed) => {
+      if (error) {
+        throw error
+      }
+      if (results.affectedRows) {
+        var response = {
+          msg: 'success',
+        }
+        res.status(200)
+        res.send(response)
+      } else {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
+    })
+  })
 // app.route('/user')
 //   .post((req, res) => {
 //     let username = req.body.username

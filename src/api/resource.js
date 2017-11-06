@@ -20,9 +20,11 @@ import * as config from './config'
 const getAllGoods = () => axios.get(config.MY_PHP_SERVICE + '/goods')
 const searchByName = (name) => axios.get(config.MY_PHP_SERVICE + '/goods/' + name)
 const searchById = (id) => axios.get(config.MY_PHP_SERVICE + '/goods/id/' + id)
+const updateCargo = (options) => axios.post(config.MY_PHP_SERVICE + '/goods/id/' + options.id, options)
 
 export {
   getAllGoods,
   searchByName,
-  searchById
+  searchById,
+  updateCargo
 }

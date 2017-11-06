@@ -5,7 +5,8 @@ import * as types from '../mutation-types'
 
 const state = {
   goods: [],
-  goodsNameList: []
+  goodsNameList: [],
+  isOpenDialog: false
 }
 
 const mutations = {
@@ -21,6 +22,9 @@ const mutations = {
   [types.GET_GOODS] (state, allGoods) {
     state.goods = allGoods
   },
+  [types.UPDATE_GOODS] (state, goods) {
+    Object.assign(state.goods[0], goods)
+  },
   [types.GET_GOODS_LIST] (state, goodsListRes) {
     let goodList = []
     goodsListRes.map(goods => {
@@ -31,6 +35,12 @@ const mutations = {
       })
     })
     state.goodsNameList = goodList.sort((a, b) => b.searchCount - a.searchCount)
+  },
+  [types.OPEN_DIALOG] (state) {
+    state.isOpenDialog = true
+  },
+  [types.CLOSE_DIALOG] (state) {
+    state.isOpenDialog = false
   }
 }
 export default {

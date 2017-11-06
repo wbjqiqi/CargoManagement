@@ -46,6 +46,12 @@
       label="库存数量"
       prop="rest">
     </el-table-column>
+    <el-table-column label="编辑">
+      <template slot-scope="scope">
+        <el-button type="primary" icon="edit" size="small" @click="editCargo(scope.row.id)">编辑</el-button>
+        <el-button type="danger" icon="delete" size="small" @click="deleteCargo(scope.row.id)">删除</el-button>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 <script lang="ts">
@@ -66,11 +72,11 @@
     filterTag (value, row) {
       return row.tag === value
     }
+    editCargo (id) {
+      this.$emit('edit-cargo', id)
+    }
 
     // created
-    created () {
-//      this.$store.dispatch('getAllGoods')
-    }
   }
 </script>
 <style>

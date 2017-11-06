@@ -8,7 +8,7 @@
                        :filters="getUserInfo.machineTypes"
                        :filter-method="filterTag"
                        filter-placement="bottom-end">
-        <template scope="scope">
+        <template slot-scope>
           <el-tag
             :type="colorArray[getUserInfo.machineTypes.findIndex((ele) => ele.value === scope.row.name)]"
             close-transition>{{scope.row.name}}
@@ -26,7 +26,7 @@
       <el-table-column prop='breakoutTime' sortable
                        label="损坏时间"></el-table-column>
       <el-table-column label="编辑">
-        <template scope="scope">
+        <template slot-scope>
           <el-button type="primary" icon="edit" size="small" @click="editBadMachine(scope.row)">编辑</el-button>
           <el-button type="danger" icon="delete" size="small" @click="deleteBadMachine(scope.row)">删除</el-button>
         </template>
@@ -45,7 +45,7 @@
 
 <script lang='ts'>
   import machineTypeDialog from './new-type-dialog'
-  import badMachineDialog from './new-cargo-dialog'
+  import badMachineDialog from './cargo-dialog'
   import {mapGetters} from 'vuex'
   import Vue from 'vue'
   import Component from 'vue-class-component'
@@ -141,7 +141,6 @@
     filterTag (value, row) {
       return row.name === value
     }
-
   }
 </script>
 
