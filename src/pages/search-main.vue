@@ -58,29 +58,18 @@
   })
   export default class searchMain extends Vue {
     // data
-    tableData5 = [{
-      id: '12987122',
-      name: '好滋好味鸡蛋仔',
-      brand: '江浙小吃、小吃零食',
-      remark: '荷兰优质淡奶，奶香浓而不腻',
-      price: '上海市普陀区真北路',
-      number: '王小虎夫妻店',
-      rest: '10333',
-      specific: '133'
-    }]
 
     // method
     formatter (row, column) {
       return row.address
     }
-
     filterTag (value, row) {
       return row.tag === value
     }
 
     // created
     created () {
-      this.$store.dispatch('getAllGoods')
+//      this.$store.dispatch('getAllGoods')
     }
   }
 </script>

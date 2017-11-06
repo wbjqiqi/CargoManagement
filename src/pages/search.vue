@@ -41,7 +41,6 @@
     timeout = null
 
     // methods
-
     querySearchAsync (queryString, cb) {
       this.$store.dispatch('searchByName', queryString)
 
@@ -50,14 +49,17 @@
         cb(this['Goods'].goodsNameList)
       }, 200)
     }
-
     createStateFilter (queryString) {
       return (state) => {
         return (state.value.indexOf(queryString.toLowerCase()) === 0)
       }
     }
+    searchById (id) {
+      this.$store.dispatch('searchById', id)
+    }
 
     handleSelect (item) {
+      this.searchById(item.id)
       this.$router.push({name: 'searchMain', params: {cargoId: item.id}})
     }
   }

@@ -43,10 +43,21 @@ app.route('/goods')
 app.route('/goods/:name')
   .get((req, res) => {
     let name  = req.params.name
-    connection.query('SELECT name,id FROM GOODS_MESSAGE WHERE name LIKE "%' + name + '%"', function (error, results, fields) {
+    connection.query('SELECT name,id,searchCount FROM GOODS_MESSAGE WHERE name LIKE "%' + name + '%"', function (error, results, fields) {
       if (error) throw error
       res.status(200)
       res.send(results)
+    })
+  })
+app.route('/goods/id/:cargoId')
+  .get((req, res) => {
+    let id  = req.params.cargoId
+    connection.query('SELECT * FROM GOODS_MESSAGE WHERE id =' + id, function (error, results, fields) {
+      if (error) throw error
+      connection.query('UPDATE `goods_message` SET `searchCount` = searchCount + 1 WHERE `goods_message`.`id` = ' + id, function () {
+        res.status(200)
+        res.send(results)
+      })
     })
   })
 // app.route('/user')

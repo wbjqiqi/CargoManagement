@@ -18,3 +18,11 @@ export const searchByName = ({commit}, name) => {
     })
   })
 }
+
+export const searchById = ({commit}, id) => {
+  return new Promise((resolve, reject) => {
+    api.searchById(id).then((res) => {
+      commit(types.GET_GOODS, res.data)
+    })
+  })
+}

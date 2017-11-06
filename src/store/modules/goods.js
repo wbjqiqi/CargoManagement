@@ -26,10 +26,11 @@ const mutations = {
     goodsListRes.map(goods => {
       goodList.push({
         id: goods.id,
-        value: goods.name
+        value: goods.name,
+        searchCount: goods.searchCount
       })
     })
-    state.goodsNameList = goodList
+    state.goodsNameList = goodList.sort((a, b) => b.searchCount - a.searchCount)
   }
 }
 export default {
