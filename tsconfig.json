@@ -4,18 +4,18 @@
   ],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "strict": false,
     "allowJs": true,
     "module": "es2015",
     "target": "es5",
     "moduleResolution": "node",
-    "experimentalDecorators": true,
     "isolatedModules": true,
-    "typeRoots": [
-      "./types"
-    ],
     "lib": [
-      "es2017",
-      "dom"
+      "dom",
+      "es5",
+      "es2015.promise",
+      "esnext"
     ],
     "sourceMap": true,
     "pretty": true
