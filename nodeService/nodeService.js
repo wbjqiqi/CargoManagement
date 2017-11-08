@@ -74,6 +74,15 @@ app.route('/goods/:name')
       res.send(results)
     })
   })
+app.route('/goods/keycode/:name')
+  .get((req, res) => {
+    let name = req.params.name
+    connection.query('SELECT name,id,searchCount FROM GOODS_MESSAGE WHERE keycode LIKE "%' + name + '%"', function (error, results, fields) {
+      if (error) throw error
+      res.status(200)
+      res.send(results)
+    })
+  })
 app.route('/goods/id/:cargoId')
   .get((req, res) => {
     let id = req.params.cargoId

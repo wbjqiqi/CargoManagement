@@ -23,6 +23,9 @@
       <el-form-item label="库存数量" prop="rest">
         <el-input v-model="goods.rest" auto-complete="off"></el-input>
       </el-form-item>
+      <el-form-item label="索引关键字(推荐商品名称的拼音首字母)" prop="keycode">
+        <el-input v-model="goods.keycode" auto-complete="off"></el-input>
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeDialog">取 消</el-button>

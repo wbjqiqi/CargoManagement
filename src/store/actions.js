@@ -15,6 +15,16 @@ export const searchByName = ({commit}, name) => {
   return new Promise((resolve, reject) => {
     api.searchByName(name).then((res) => {
       commit(types.GET_GOODS_LIST, res.data)
+      resolve(res.data)
+    })
+  })
+}
+
+export const searchByKeycode = ({commit}, name) => {
+  return new Promise((resolve, reject) => {
+    api.searchByKeycode(name).then((res) => {
+      commit(types.GET_GOODS_LIST, res.data)
+      resolve(res.data)
     })
   })
 }

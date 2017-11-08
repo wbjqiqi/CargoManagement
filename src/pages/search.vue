@@ -11,8 +11,8 @@
               placeholder="请输入内容"
               @select="handleSelect">
               <el-select v-model="searchType" slot="prepend" placeholder="搜索">
-                <el-option label="搜索" value="1"></el-option>
-                <el-option label="高级搜索" value="2"></el-option>
+                <el-option label="搜索" value="base"></el-option>
+                <el-option label="高级搜索" value="keycode"></el-option>
               </el-select>
               <el-button slot="append" icon="search"></el-button>
             </el-autocomplete>
@@ -64,7 +64,11 @@
 
     // methods
     querySearchAsync (queryString, cb) {
-      this.$store.dispatch('searchByName', queryString)
+      this.$store.dispatch('searchByName', queryString).then((res) => {
+        if (!res.length) {
+          this.$store.dispatch('searchByKeycode', queryString)
+        }
+      })
 
       clearTimeout(this.timeout)
       this.timeout = setTimeout(() => {
