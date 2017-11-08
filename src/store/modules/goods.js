@@ -41,6 +41,9 @@ const mutations = {
   },
   [types.CLOSE_DIALOG] (state) {
     state.isOpenDialog = false
+  },
+  [types.DELETE_GOODS] (state, id) {
+    state.goods.splice(state.goods.findIndex((i) => i.id === id), 1)
   }
 }
 export default {

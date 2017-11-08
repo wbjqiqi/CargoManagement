@@ -40,9 +40,34 @@ app.route('/goods')
       res.send(results)
     })
   })
+  .post((req, res) => {
+    var options = req.body;
+    let id = Math.random().toString(36).substr(2)
+    var key = '`id`,'
+    var str = "'" + id + "',"
+    for (i in options) {
+      key += "`" + i + '`,'
+      str += "'" + options[i] + "',"
+    }
+    key = key.substring(0, key.length - 1)
+    str = str.substring(0, str.length - 1)
+    connection.query('INSERT INTO GOODS_MESSAGE (' + key + ') VALUES (' + str + ')', (error, results, failed) => {
+      if (error) {
+        throw error
+      }
+      if (results.affectedRows) {
+        res.status(200)
+        res.send({id: id})
+      } else {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
+
+    })
+  })
 app.route('/goods/:name')
   .get((req, res) => {
-    let name  = req.params.name
+    let name = req.params.name
     connection.query('SELECT name,id,searchCount FROM GOODS_MESSAGE WHERE name LIKE "%' + name + '%"', function (error, results, fields) {
       if (error) throw error
       res.status(200)
@@ -51,8 +76,8 @@ app.route('/goods/:name')
   })
 app.route('/goods/id/:cargoId')
   .get((req, res) => {
-    let id  = req.params.cargoId
-    connection.query('SELECT * FROM GOODS_MESSAGE WHERE id =' + id, function (error, results, fields) {
+    let id = req.params.cargoId
+    connection.query("SELECT * FROM GOODS_MESSAGE WHERE id ='" + id + "'", function (error, results, fields) {
       if (error) throw error
       connection.query('UPDATE `goods_message` SET `searchCount` = searchCount + 1 WHERE `goods_message`.`id` = ' + id, function () {
         res.status(200)
@@ -79,6 +104,25 @@ app.route('/goods/id/:cargoId')
         }
         res.status(200)
         res.send(response)
+      } else {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
+    })
+  })
+  .delete((req, res) => {
+    var id = req.params.cargoId
+    var str = 'DELETE FROM `goods_message` WHERE id=\'' + id + '\''
+    connection.query(str, (error, results, failed) => {
+      if (error) {
+        throw error
+      }
+      if (results.affectedRows) {
+        var response = {
+          msg: 'success',
+        }
+        res.status(200)
+        res.send({id: id})
       } else {
         res.status(500)
         res.send({msg: 'failed'})
