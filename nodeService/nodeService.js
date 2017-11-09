@@ -75,13 +75,14 @@ app.route('/goods/types')
   })
   .put((req, res) => {
     var name = req.body.name
-    connection.query('INSERT INTO GOODS_BRANDS (name) VALUES ("' + name + '")', (error, results, failed) => {
+    let id = Math.random().toString(36).substr(2)
+    connection.query('INSERT INTO GOODS_BRANDS (name, id) VALUES ("' + name + '","' + id + '")', (error, results, failed) => {
       if (error) {
         throw error
       }
       if (results.affectedRows) {
         res.status(200)
-        res.send()
+        res.send({id: id})
       } else {
         res.status(500)
         res.send({msg: 'failed'})
@@ -96,6 +97,26 @@ app.route('/goods/types/:name')
       if (error) throw error
       res.status(200)
       res.send(results)
+    })
+  })
+app.route('/goods/types/id/:id')
+  .delete((req, res) => {
+    var id = req.params.id
+    var str = 'DELETE FROM `goods_brands` WHERE id=\'' + id + '\''
+    connection.query(str, (error, results, failed) => {
+      if (error) {
+        throw error
+      }
+      if (results.affectedRows) {
+        var response = {
+          msg: 'success',
+        }
+        res.status(200)
+        res.send({id: id})
+      } else {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
     })
   })
 app.route('/goods/:name')

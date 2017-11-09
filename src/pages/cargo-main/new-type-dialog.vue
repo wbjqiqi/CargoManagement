@@ -6,10 +6,13 @@
         <el-input v-model="brandName" auto-complete="off"></el-input>
       </el-form-item>
     </el-form>
-    <el-tag v-for="(key, index) in getBrandType"
-      :type="colorArray[index]" :key="key.text"
-      close-transition>{{key.text}}
+    <span v-for="(key, index) in getBrandType" :key="key.text" class="tag-grid">
+      <el-tag
+              :type="colorArray[index]"
+              close-transition>{{key.text}}
     </el-tag>
+      <span class="delete-symbol" @click="deleteBrandType(key.id)">x</span>
+    </span>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeDialog">取 消</el-button>
       <el-button type="primary"
@@ -38,7 +41,7 @@
         name: this.brandName
       }
       this.$store.dispatch('newBrandType', data).then((res) => {
-        this.closeDialog()
+        this.brandName = ''
         this['$message']({
           type: 'success',
           message: '更新成功'
@@ -52,6 +55,26 @@
       })
     }
 
+    deleteBrandType (id) {
+      this.$confirm('此操作将删除该品牌标签, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$store.dispatch('deleteBrandType', id).then(() => {
+          this['$message']({
+            type: 'success',
+            message: '删除成功'
+          })
+        })
+      }).catch(() => {
+        this['$message']({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    }
+
     closeDialog () {
       this.$emit('closeTypeDialog')
     }
@@ -62,5 +85,32 @@
 <style scoped>
   .el-tag{
     margin:0 5px;
+  }
+  .tag-grid{
+    display: inline-block;
+    position: relative;
+    margin: 5px;
+  }
+  .tag-grid:hover .delete-symbol{
+    display: block;
+  }
+  .delete-symbol{
+    display: none;
+    position: absolute;
+    top: -10px;
+    right: 0;
+    border-radius: 50%;
+    color: #d9534f;
+    border: 1px solid #999;
+    width: 13px;
+    height: 13px;
+    line-height: 12px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .delete-symbol:hover{
+    color: #fff;
+    background-color: #d9534f;
+    border: 1px solid #999;
   }
 </style>

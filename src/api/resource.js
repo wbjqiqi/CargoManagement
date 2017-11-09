@@ -20,6 +20,7 @@ import * as config from './config'
 const getAllGoods = () => axios.get(config.MY_PHP_SERVICE + '/goods')
 const getAllGoodsType = () => axios.get(config.MY_PHP_SERVICE + '/goods/types')
 const newBrandType = (options) => axios.put(config.MY_PHP_SERVICE + '/goods/types', options)
+const deleteBrandType = (id) => axios.delete(config.MY_PHP_SERVICE + '/goods/types/id/' + id)
 const searchByName = (name) => axios.get(config.MY_PHP_SERVICE + '/goods/' + name)
 const searchByAllName = (name) => axios.get(config.MY_PHP_SERVICE + '/goods/detail/' + name)
 const searchByKeycode = (name) => axios.get(config.MY_PHP_SERVICE + '/goods/keycode/' + name)
@@ -32,6 +33,7 @@ export {
   getAllGoods,
   getAllGoodsType,
   newBrandType,
+  deleteBrandType,
   searchByName,
   searchByAllName,
   searchByKeycode,

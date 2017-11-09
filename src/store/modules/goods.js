@@ -10,6 +10,25 @@ const state = {
   goodsBrandTypes: []
 }
 
+var by = function (name) {
+  return function (o, p) {
+    var a, b
+    if (typeof o === 'object' && typeof p === 'object' && o && p) {
+      a = o[name]
+      b = p[name]
+      if (a === b) {
+        return 0
+      }
+      if (typeof a === typeof b) {
+        return a < b ? -1 : 1
+      }
+      return typeof a < typeof b ? -1 : 1
+    } else {
+      // log.debug('error')
+    }
+  }
+}
+
 const mutations = {
   // clearMachines () {
   //   state.machines = []
@@ -27,12 +46,14 @@ const mutations = {
     let allBrands = []
     allTypes.map(type => {
       let brand = {
+        id: type.id,
         value: type.name,
         text: type.name
       }
       allBrands.push(brand)
     })
     state.goodsBrandTypes = allBrands
+    state.goodsBrandTypes.sort(by('text'))
   },
   [types.UPDATE_GOODS] (state, goods) {
     Object.assign(state.goods[0], goods)
@@ -57,12 +78,17 @@ const mutations = {
   [types.DELETE_GOODS] (state, id) {
     state.goods.splice(state.goods.findIndex((i) => i.id === id), 1)
   },
-  [types.ADD_BRAND_TYPE] (state, name) {
+  [types.DELETE_BRAND_TYPE] (state, id) {
+    state.goodsBrandTypes.splice(state.goodsBrandTypes.findIndex((i) => i.id === id), 1)
+  },
+  [types.ADD_BRAND_TYPE] (state, type) {
     let brand = {
-      value: name,
-      text: name
+      id: type.id,
+      value: type.name,
+      text: type.name
     }
     state.goodsBrandTypes.push(brand)
+    state.goodsBrandTypes.sort(by('text'))
   }
 }
 export default {

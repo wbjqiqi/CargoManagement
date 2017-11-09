@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 2017-11-08 16:51:14
+-- Generation Time: 2017-11-09 18:04:09
 -- 服务器版本： 10.1.19-MariaDB
 -- PHP Version: 5.6.28
 
@@ -19,6 +19,26 @@ SET time_zone = "+00:00";
 --
 -- Database: `goods`
 --
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `goods_brands`
+--
+
+CREATE TABLE `goods_brands` (
+  `id` varchar(100) NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- 转存表中的数据 `goods_brands`
+--
+
+INSERT INTO `goods_brands` (`id`, `name`) VALUES
+('1', '格力'),
+('2', '伊利'),
+('3', '优惠');
 
 -- --------------------------------------------------------
 
@@ -45,10 +65,9 @@ CREATE TABLE `goods_message` (
 --
 
 INSERT INTO `goods_message` (`id`, `name`, `brand`, `remark`, `price`, `number`, `rest`, `specific`, `image`, `searchCount`, `keycode`) VALUES
-('06b827hjhwen1jv7j473k2csor', '', '', '', 0, 0, 0, '', '', 0, 'wxk'),
-('1', '挖掘机2', '蓝翔', '很好', 2999, 52, 3, '台', '/static/assets/images/th.jpg', 82, 'wjj'),
-('1x0empgtmxgf55ryxhux1dcxr', '', '', '', 0, 0, 0, '', '', 1, ''),
-('2', '空调', '格力', '格力空调', 2399, 6, 33, '无', '', 7, ''),
+('1', '挖掘机2', '蓝翔', '很好', 2999, 52, 3, '台', '/static/assets/images/th.jpg', 99, 'wjj'),
+('1x0empgtmxgf55ryxhux1dcxr', '', '', '', 0, 0, 0, '', '', 18, ''),
+('2', '空调', '格力', '格力空调', 2399, 6, 33, '无', '', 14, ''),
 ('4m3ophgjs0x54pfzyo01u7hkt9', '', '', '', 0, 0, 0, '', '', 0, ''),
 ('83navg4y63jclkplag9y0hpvi', '', '', '', 0, 0, 0, '', '', 0, ''),
 ('8efuyex7gq4pjxtqm7cmu0udi', '', '', '', 0, 0, 0, '', '', 0, ''),
@@ -70,6 +89,8 @@ INSERT INTO `goods_message` (`id`, `name`, `brand`, `remark`, `price`, `number`,
 ('ng7dye0h31pbqz4000w1att9', '', '', '', 0, 0, 0, '', '', 0, ''),
 ('oavev6lwziuyehflgvij7zaor', '', '', '', 0, 0, 0, '', '', 0, ''),
 ('pz2wq42imvgume076paybke29', '', '', '', 0, 0, 0, '', '', 0, ''),
+('qswpfummr8q5uidyjls7nwmi', '333', '伊利', '333', 333, 333, 333, '333', '', 0, '333'),
+('vz39l3caiy79zvco5lz4u0udi', '空调', '优惠', '33', 22, 33, 22, '22', '', 0, 'kt'),
 ('wdqggwfbllwufdzc2jf6flxr', '', '', '', 0, 0, 0, '', '', 0, ''),
 ('yqkkrt9q47v8j42ofejulq5mi', '', '', '', 0, 0, 0, '', '', 0, ''),
 ('zq3q0ufz88k690w292ehwu3di', '', '', '', 0, 0, 0, '', '', 0, '');
@@ -77,6 +98,12 @@ INSERT INTO `goods_message` (`id`, `name`, `brand`, `remark`, `price`, `number`,
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `goods_brands`
+--
+ALTER TABLE `goods_brands`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `goods_message`

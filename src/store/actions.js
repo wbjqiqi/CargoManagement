@@ -83,8 +83,19 @@ export const deleteCargo = ({commit}, id) => {
 
 export const newBrandType = ({commit}, data) => {
   return new Promise((resolve, reject) => {
-    api.newBrandType(data).then(() => {
-      commit(types.ADD_BRAND_TYPE, data.name)
+    api.newBrandType(data).then((res) => {
+      let brand = {}
+      Object.assign(brand, data, res.data)
+      commit(types.ADD_BRAND_TYPE, brand)
+      resolve()
+    })
+  })
+}
+
+export const deleteBrandType = ({commit}, id) => {
+  return new Promise((resolve, reject) => {
+    api.deleteBrandType(id).then((res) => {
+      commit(types.DELETE_BRAND_TYPE, id)
       resolve()
     })
   })
