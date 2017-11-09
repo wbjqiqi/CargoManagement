@@ -18,7 +18,10 @@ import axios from 'axios'
 import * as config from './config'
 
 const getAllGoods = () => axios.get(config.MY_PHP_SERVICE + '/goods')
+const getAllGoodsType = () => axios.get(config.MY_PHP_SERVICE + '/goods/types')
+const newBrandType = (options) => axios.put(config.MY_PHP_SERVICE + '/goods/types', options)
 const searchByName = (name) => axios.get(config.MY_PHP_SERVICE + '/goods/' + name)
+const searchByAllName = (name) => axios.get(config.MY_PHP_SERVICE + '/goods/detail/' + name)
 const searchByKeycode = (name) => axios.get(config.MY_PHP_SERVICE + '/goods/keycode/' + name)
 const searchById = (id) => axios.get(config.MY_PHP_SERVICE + '/goods/id/' + id)
 const newCargo = (options) => axios.post(config.MY_PHP_SERVICE + '/goods', options)
@@ -27,7 +30,10 @@ const deleteCargo = (id) => axios.delete(config.MY_PHP_SERVICE + '/goods/id/' + 
 
 export {
   getAllGoods,
+  getAllGoodsType,
+  newBrandType,
   searchByName,
+  searchByAllName,
   searchByKeycode,
   searchById,
   newCargo,

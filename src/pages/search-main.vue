@@ -39,9 +39,17 @@
         label="商品名称"
         prop="name">
       </el-table-column>
-      <el-table-column
-        label="商品品牌"
-        prop="brand">
+      <el-table-column prop='brand' sortable
+                       label="商品品牌"
+                       :filters="currentBrands"
+                       :filter-method="filterTag"
+                       filter-placement="bottom-end">
+        <template scope="scope">
+          <el-tag
+            :type="colorArray[Goods.goodsBrandTypes.findIndex((ele) => ele.value === scope.row.brand)]"
+            close-transition>{{scope.row.brand}}
+          </el-tag>
+        </template>
       </el-table-column>
       <el-table-column
         label="库存数量"
@@ -56,18 +64,29 @@
     </el-table>
     <el-button @click="newCargo">新建商品</el-button>
     <el-button @click="getAllCargo">获取所有商品</el-button>
+    <el-button @click="addBrandType">新建品牌种类</el-button>
   </div>
 </template>
 <script lang="ts">
   import Vue from 'vue'
-  import { mapState } from 'vuex'
+  import { mapState, mapGetters } from 'vuex'
   import Component from 'vue-class-component'
 
   @Component({
-    computed: mapState(['Goods'])
+    computed: {
+      ...mapState(['Goods']),
+      ...mapGetters(['curretGoods'])
+    },
+    props: ['colorArray'],
+    watch: {
+      curretGoods () {
+        this['getCurrentBrands']()
+      }
+    }
   })
   export default class searchMain extends Vue {
     // data
+    currentBrands = []
 
     // method
     formatter (row, column) {
@@ -75,7 +94,18 @@
     }
 
     filterTag (value, row) {
-      return row.tag === value
+      return row.brand === value
+    }
+
+    getCurrentBrands () {
+      this.currentBrands = this['Goods'].goodsBrandTypes.filter((brand) => {
+        for (let good of this['Goods'].goods) {
+          if (good.brand === brand.value) {
+            return true
+          }
+        }
+        return false
+      })
     }
 
     editCargo (id) {
@@ -90,6 +120,9 @@
     }
     getAllCargo () {
       this.$emit('get-all-cargo')
+    }
+    addBrandType () {
+      this.$emit('add-brand-type')
     }
     // created
   }

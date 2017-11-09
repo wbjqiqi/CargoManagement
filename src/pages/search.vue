@@ -21,10 +21,11 @@
       </el-col>
     </div>
     <div class="search-router">
-      <router-view @edit-cargo="editCargo" @delete-cargo="deleteCargo" @new-cargo="newCargo" @get-all-cargo="getAllCargo"></router-view>
+      <router-view :colorArray="colorArray" @edit-cargo="editCargo" @delete-cargo="deleteCargo" @new-cargo="newCargo" @get-all-cargo="getAllCargo" @add-brand-type="addBrandType"></router-view>
     </div>
     <CargoDialod :isOpenDialog="isOpenDialog" :isEdit="isEdit" :goods="goods" @closeDialog="closeThisDialog"
                  @submitCargo="submitCargo" ></CargoDialod>
+    <new-type-dialog :newTypeBox="newTypeBox" :colorArray="colorArray" @closeTypeDialog="newTypeBox=false" v-if="newTypeBox"></new-type-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -33,14 +34,15 @@
   import Component from 'vue-class-component'
 
   import CargoDialod from './cargo-main/cargo-dialog.vue'
-
+  import NewTypeDialog from './cargo-main/new-type-dialog.vue'
   @Component({
     computed: {
       ...mapState(['Goods']),
       ...mapGetters(['isOpenDialog'])
     },
     components: {
-      CargoDialod
+      CargoDialod,
+      NewTypeDialog
     }
   })
   export default class search extends Vue {
@@ -61,9 +63,14 @@
       image: ''
     }
     isEdit = false
+    newTypeBox = false
+    colorArray = ['primary', 'success', 'warning', 'danger', 'Dark Blue', 'Light Blue', 'Gray', 'Light Black', 'Extra Light Silver']
 
     // methods
     querySearchAsync (queryString, cb) {
+      // 效率模式 关闭
+      // 性能模式 打开
+      // if (!queryString) return
       this.$store.dispatch('searchByName', queryString).then((res) => {
         if (!res.length) {
           this.$store.dispatch('searchByKeycode', queryString)
@@ -86,8 +93,12 @@
       this.$store.dispatch('searchById', id)
     }
 
+    searchByAllName (name) {
+      this.$store.dispatch('searchByAllName', name)
+    }
+
     handleSelect (item) {
-      this.searchById(item.id)
+      this.searchByAllName(item.value)
       this.$router.push({name: 'searchMain', params: {cargoId: item.id}})
     }
 
@@ -146,7 +157,6 @@
             type: 'success',
             message: '添加成功'
           })
-          console.log(res)
           this.handleSelect(res)
         }).catch(err => {
           this['$message']({
@@ -180,6 +190,14 @@
 
     getAllCargo () {
       this.$store.dispatch('getAllGoods')
+    }
+
+    addBrandType () {
+      this.newTypeBox = true
+    }
+
+    created () {
+      this.$store.dispatch('getAllGoodsType')
     }
   }
 </script>

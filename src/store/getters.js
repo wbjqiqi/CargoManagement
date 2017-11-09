@@ -3,3 +3,5 @@
  */
 export const getUserInfo = state => state.Login
 export const isOpenDialog = state => state.Goods.isOpenDialog
+export const curretGoods = state => state.Goods.goods
+export const getBrandType = state => state.Goods.goodsBrandTypes

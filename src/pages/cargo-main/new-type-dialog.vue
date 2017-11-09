@@ -1,12 +1,12 @@
 <template>
-  <el-dialog size="small" title="新建机器种类" v-model="newTypeBox" validator="false" :beforeClose="closeDialog">
-    <el-form @keyup.enter.native="newTypeSubmit()" labelPosition="left" :model="machineTypeForm"
+  <el-dialog size="small" title="新建品牌种类" v-model="newTypeBox" validator="false" :beforeClose="closeDialog">
+    <el-form @keyup.enter.native="newTypeSubmit()" labelPosition="left"
              ref="clientBox">
-      <el-form-item label="名字" prop="breakoutTime">
-        <el-input v-model="machineTypeForm.machineName" auto-complete="off"></el-input>
+      <el-form-item label="名字" prop="brandName">
+        <el-input v-model="brandName" auto-complete="off"></el-input>
       </el-form-item>
     </el-form>
-    <el-tag v-for="(key, index) in getUserInfo.machineTypes"
+    <el-tag v-for="(key, index) in getBrandType"
       :type="colorArray[index]" :key="key.text"
       close-transition>{{key.text}}
     </el-tag>
@@ -26,26 +26,23 @@
   @Component({
     props: ['newTypeBox', 'getAllMachine', 'colorArray'],
     computed: mapGetters([
-      'getUserInfo'
+      'getBrandType'
     ])
   })
   export default class typeDialog extends Vue {
 //    data
-    machineTypeForm = {
-      machineName: ''
-    }
+    brandName = ''
 //    methods
     newTypeSubmit (): void {
       let data = {
-        name: this['machineTypeForm'].machineName
+        name: this.brandName
       }
-      this.$store.dispatch('newMachineType', data).then((res) => {
+      this.$store.dispatch('newBrandType', data).then((res) => {
         this.closeDialog()
         this['$message']({
           type: 'success',
           message: '更新成功'
         })
-        this['getAllMachine']()
       }).catch(err => {
         this['$message']({
           type: 'error',

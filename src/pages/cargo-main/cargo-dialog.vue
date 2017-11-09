@@ -2,11 +2,13 @@
   <el-dialog size="small" :title="isEdit?'编辑':'新建'" v-model="openDialog" validator="false" :beforeClose="closeDialog">
     <el-form @keyup.enter.native="submitCargo()" labelPosition="left" :model="goods"
              ref="clientBox" v-if="goods">
+      <el-form-item label="商品品牌" prop="brand">
+        <el-radio-group v-model="goods.brand" v-for="label in getBrandType" :key="label.text">
+          <el-radio :label=label.text ></el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item label="商品名称" prop="name">
         <el-input v-model="goods.name" auto-complete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="商品品牌" prop="brand">
-        <el-input v-model="goods.brand" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="规格" prop="specific">
         <el-input v-model="goods.specific" auto-complete="off"></el-input>
@@ -39,6 +41,7 @@
 <script lang='ts'>
   import Vue from 'vue'
   import Component from 'vue-class-component'
+  import { mapGetters } from 'vuex'
 
   @Component({
     props: ['isEdit', 'goods', 'isOpenDialog'],
@@ -46,7 +49,8 @@
       isOpenDialog () {
         this.openDialog = this.isOpenDialog
       }
-    }
+    },
+    computed: mapGetters(['getBrandType'])
   })
   export default class cargoDiad extends Vue {
     //    data

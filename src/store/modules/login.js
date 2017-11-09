@@ -25,7 +25,6 @@ const mutations = {
     localStorage.username = res.res.body.username
   },
   [types.GET_MACHINE] (state, res) {
-    console.log(res)
     if (res.res.body.msg !== 'success') {
       return false
     }

@@ -11,10 +11,28 @@ export const getAllGoods = ({commit}) => {
   })
 }
 
+export const getAllGoodsType = ({commit}) => {
+  return new Promise((resolve, reject) => {
+    api.getAllGoodsType().then((res) => {
+      commit(types.GET_TYPES, res.data)
+      resolve()
+    })
+  })
+}
+
 export const searchByName = ({commit}, name) => {
   return new Promise((resolve, reject) => {
     api.searchByName(name).then((res) => {
       commit(types.GET_GOODS_LIST, res.data)
+      resolve(res.data)
+    })
+  })
+}
+
+export const searchByAllName = ({commit}, name) => {
+  return new Promise((resolve, reject) => {
+    api.searchByAllName(name).then((res) => {
+      commit(types.GET_GOODS, res.data)
       resolve(res.data)
     })
   })
@@ -58,6 +76,15 @@ export const deleteCargo = ({commit}, id) => {
   return new Promise((resolve, reject) => {
     api.deleteCargo(id).then((res) => {
       commit(types.DELETE_GOODS, id)
+      resolve()
+    })
+  })
+}
+
+export const newBrandType = ({commit}, data) => {
+  return new Promise((resolve, reject) => {
+    api.newBrandType(data).then(() => {
+      commit(types.ADD_BRAND_TYPE, data.name)
       resolve()
     })
   })

@@ -65,10 +65,52 @@ app.route('/goods')
 
     })
   })
+app.route('/goods/types')
+  .get((req, res) => {
+    connection.query('SELECT * FROM goods_brands', function (error, results, fields) {
+      if (error) throw error
+      res.status(200)
+      res.send(results)
+    })
+  })
+  .put((req, res) => {
+    var name = req.body.name
+    connection.query('INSERT INTO GOODS_BRANDS (name) VALUES ("' + name + '")', (error, results, failed) => {
+      if (error) {
+        throw error
+      }
+      if (results.affectedRows) {
+        res.status(200)
+        res.send()
+      } else {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
+
+    })
+  })
+app.route('/goods/types/:name')
+  .get((req, res) => {
+    let name = req.params.name
+    connection.query('SELECT name,id,searchCount FROM GOODS_MESSAGE WHERE name LIKE "%' + name + '%"', function (error, results, fields) {
+      if (error) throw error
+      res.status(200)
+      res.send(results)
+    })
+  })
 app.route('/goods/:name')
   .get((req, res) => {
     let name = req.params.name
     connection.query('SELECT name,id,searchCount FROM GOODS_MESSAGE WHERE name LIKE "%' + name + '%"', function (error, results, fields) {
+      if (error) throw error
+      res.status(200)
+      res.send(results)
+    })
+  })
+app.route('/goods/detail/:name')
+  .get((req, res) => {
+    let name = req.params.name
+    connection.query('SELECT * FROM GOODS_MESSAGE WHERE name ="' + name + '"', function (error, results, fields) {
       if (error) throw error
       res.status(200)
       res.send(results)
@@ -97,7 +139,6 @@ app.route('/goods/id/:cargoId')
   .post((req, res) => {
     var id = req.params.cargoId
     var options = req.body;
-    console.log(options)
     var str = 'UPDATE `goods_message` SET '
     for (i in options) {
       str += "`" + i + "`='" + options[i] + "',"
