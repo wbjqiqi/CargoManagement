@@ -22,6 +22,9 @@
       <el-form-item label="库存数量" prop="rest">
         <el-input v-model="goods.rest" auto-complete="off" placeholder="库存还剩多少？只能是数字"></el-input>
       </el-form-item>
+      <el-form-item>
+        <el-input v-model="goods.images" auto-complete="off" type="file"></el-input>
+      </el-form-item>
       <el-form-item label="索引关键字(推荐商品名称的拼音首字母)" prop="keycode">
         <el-input v-model="goods.keycode" auto-complete="off" placeholder="用商品名字搜索太麻烦？给它一个小名，可以用小名搜索到（例：wjj（挖掘机））"></el-input>
       </el-form-item>
@@ -29,7 +32,7 @@
         <el-input v-model="goods.remark" auto-complete="off" placeholder="你还有什么要对这商品说？"></el-input>
       </el-form-item>
     </el-form>
-    <div slot="footer" class="dialog-footer">
+    <div slot-scope="footer" class="dialog-footer">
       <el-button @click="closeDialog">取 消</el-button>
       <el-button type="primary"
                  @click=submitCargo()>确 定
@@ -59,6 +62,7 @@
     validator = BrandValidator.validateName()
     //    methods
     submitCargo () {
+      console.log(this['goods'].images)
       let data = {
         model: this.$refs.clientBox['model'],
         isEdit: this['isEdit']

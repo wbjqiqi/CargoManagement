@@ -17,6 +17,7 @@
     "axios": "^0.17.0",
     "mysql": "^2.15.0",
     "vue": "^2.5.2",
+    "vue-file-upload": "^0.1.6",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {

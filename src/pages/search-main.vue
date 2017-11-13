@@ -44,7 +44,7 @@
                        :filters="currentBrands"
                        :filter-method="filterTag"
                        filter-placement="bottom-end">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag
             :type="colorArray[Goods.goodsBrandTypes.findIndex((ele) => ele.value === scope.row.brand)]"
             close-transition>{{scope.row.brand}}

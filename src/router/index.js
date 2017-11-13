@@ -4,12 +4,19 @@ import Search from '../pages/search.vue'
 import searchMain from '../pages/search-main.vue'
 import Management from '../pages/cargo-main/cargo.vue'
 
+import Upload from '../pages/upload/file-upload.vue'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
-      path: '/',
+      path: '/upload',
+      name: 'upload',
+      component: Upload
+    },
+    {
+      path: '/a',
       name: 'search',
       component: Search,
       children: [{
