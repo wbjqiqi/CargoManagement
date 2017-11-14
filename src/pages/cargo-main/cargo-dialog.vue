@@ -1,10 +1,10 @@
 <template>
   <el-dialog size="small" :title="isEdit?'编辑':'新建'" v-model="openDialog" validator="false" :beforeClose="closeDialog">
     <el-form @keyup.enter.native="submitCargo()" labelPosition="left" :model="goods"
-             ref="clientBox" v-if="goods" :rules="validator">
+             ref="clientBox" :rules="validator">
       <el-form-item label="商品品牌" prop="brand">
         <el-radio-group v-model="goods.brand" v-for="label in getBrandType" :key="label.text">
-          <el-radio :label=label.text ></el-radio>
+          <el-radio :label="label.text"></el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="商品名称" prop="name">
@@ -23,46 +23,69 @@
         <el-input v-model="goods.rest" auto-complete="off" placeholder="库存还剩多少？只能是数字"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="goods.images" auto-complete="off" type="file"></el-input>
+        <el-col :span="12" style="text-align: center">
+          <el-upload
+            class="upload-demo"
+            :action="serverAddress + '/goods/file-upload'"
+            :on-remove="handleRemove"
+            :before-upload="beforeUpload"
+            :limit="1"
+            :file-list="fileList" style="line-height: 150px">
+            <el-button type="info" >点击上传图片</el-button>
+          </el-upload>
+        </el-col>
+        <el-col :span="12" style="text-align: center">
+          <img class="cargo-img"
+               :src="imgAddress"
+               alt="">
+        </el-col>
       </el-form-item>
-      <el-form-item label="索引关键字(推荐商品名称的拼音首字母)" prop="keycode">
-        <el-input v-model="goods.keycode" auto-complete="off" placeholder="用商品名字搜索太麻烦？给它一个小名，可以用小名搜索到（例：wjj（挖掘机））"></el-input>
+      <el-form-item label="索引关键字" prop="keycode">
+        <el-input v-model="goods.keycode" auto-complete="off"
+                  placeholder="用商品名字搜索太麻烦？给它一个小名，可以用小名搜索到（例：wjj（挖掘机））"></el-input>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
         <el-input v-model="goods.remark" auto-complete="off" placeholder="你还有什么要对这商品说？"></el-input>
       </el-form-item>
     </el-form>
-    <div slot-scope="footer" class="dialog-footer">
+    <div slot="footer" class="dialog-footer">
       <el-button @click="closeDialog">取 消</el-button>
       <el-button type="primary"
-                 @click=submitCargo()>确 定
+                 @click="submitCargo()">确 定
       </el-button>
     </div>
   </el-dialog>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
   import Vue from 'vue'
   import Component from 'vue-class-component'
   import { mapGetters } from 'vuex'
   import BrandValidator from '../../business/validator/brand-validator'
+  import { MY_PHP_SERVICE } from '../../api/config'
 
   @Component({
     props: ['isEdit', 'goods', 'isOpenDialog'],
     watch: {
       isOpenDialog () {
         this.openDialog = this.isOpenDialog
+      },
+      fileList (val) {
+        console.log('fileList', val)
       }
     },
     computed: mapGetters(['getBrandType'])
   })
   export default class cargoDiad extends Vue {
     //    data
+    serverAddress = MY_PHP_SERVICE
     openDialog = false
     validator = BrandValidator.validateName()
+    fileList = []
+    imgAddress = 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+
     //    methods
     submitCargo () {
-      console.log(this['goods'].images)
       let data = {
         model: this.$refs.clientBox['model'],
         isEdit: this['isEdit']
@@ -73,6 +96,12 @@
         }
       })
     }
+    handleRemove (file, fileList) {
+      console.log(file, fileList)
+    }
+    beforeUpload (file) {
+      console.log(file)
+    }
 
     closeDialog () {
       this.$emit('closeDialog')
@@ -82,5 +111,8 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-
+  .cargo-img{
+    width: 150px;
+    height: 150px;
+  }
 </style>

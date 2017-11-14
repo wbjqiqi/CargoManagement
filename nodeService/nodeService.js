@@ -4,7 +4,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-// const fs = require('fs')
+const fs = require('fs')
 const connection = require('./mysql/mysql')
 
 connection.connect()
@@ -31,6 +31,7 @@ app.all('*', function (req, res, next) {
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
+// app.use(express.bodyParser({ uploadDir: "./public/upload" }));
 
 app.route('/goods')
   .get((req, res) => {
@@ -44,10 +45,10 @@ app.route('/goods')
     var options = req.body;
     let id = Math.random().toString(36).substr(2)
     var key = '`id`,'
-    var str = "'" + id + "',"
+    var str = '\'' + id + '\','
     for (i in options) {
-      key += "`" + i + '`,'
-      str += "'" + options[i] + "',"
+      key += '`' + i + '`,'
+      str += '\'' + options[i] + '\','
     }
     key = key.substring(0, key.length - 1)
     str = str.substring(0, str.length - 1)
@@ -109,7 +110,7 @@ app.route('/goods/types/id/:id')
       }
       if (results.affectedRows) {
         var response = {
-          msg: 'success',
+          msg: 'success'
         }
         res.status(200)
         res.send({id: id})
@@ -149,7 +150,7 @@ app.route('/goods/keycode/:name')
 app.route('/goods/id/:cargoId')
   .get((req, res) => {
     let id = req.params.cargoId
-    connection.query("SELECT * FROM GOODS_MESSAGE WHERE id ='" + id + "'", function (error, results, fields) {
+    connection.query('SELECT * FROM GOODS_MESSAGE WHERE id =\'' + id + '\'', function (error, results, fields) {
       if (error) throw error
       connection.query('UPDATE `goods_message` SET `searchCount` = searchCount + 1 WHERE `goods_message`.`id` = ' + id, function () {
         res.status(200)
@@ -162,7 +163,7 @@ app.route('/goods/id/:cargoId')
     var options = req.body;
     var str = 'UPDATE `goods_message` SET '
     for (i in options) {
-      str += "`" + i + "`='" + options[i] + "',"
+      str += '`' + i + '`=\'' + options[i] + '\','
     }
     str = str.substring(0, str.length - 1)
     connection.query(str + ' WHERE id=' + id, (error, results, failed) => {
@@ -171,7 +172,7 @@ app.route('/goods/id/:cargoId')
       }
       if (results.affectedRows) {
         var response = {
-          msg: 'success',
+          msg: 'success'
         }
         res.status(200)
         res.send(response)
@@ -190,7 +191,7 @@ app.route('/goods/id/:cargoId')
       }
       if (results.affectedRows) {
         var response = {
-          msg: 'success',
+          msg: 'success'
         }
         res.status(200)
         res.send({id: id})
@@ -200,84 +201,23 @@ app.route('/goods/id/:cargoId')
       }
     })
   })
-// app.route('/user')
-//   .post((req, res) => {
-//     let username = req.body.username
-//     let pwd = req.body.pwd
-//     let alluser = require('./database/user.js')
-//     let allClient = readText('./database/clients.json')
-//     for (let i in alluser) {
-//       if (alluser[i].username === username && alluser[i].pwd === pwd) {
-//         let response = {
-//           msg: 'success',
-//           user: alluser[i].username,
-//           token: alluser[i].pwd,
-//           clients: JSON.parse(allClient)
-//         }
-//         res.status(200)
-//         res.send(response)
-//         return
-//       }
-//     }
-//     res.status(401)
-//     res.send({msg: 'failed'})
-//   })
-//
-// app.route('/client')
-//   .put((req, res) => {
-//     let options = req.body
-//     options.id = Math.random().toString(36).substr(2)
-//     options.mainId = Math.random().toString(36).substr(2) + '-' + Math.random().toString(36).substr(2)
-//
-//     let allClient = readText('./database/clients.json')
-//     let t = JSON.parse(allClient)
-//     t.push(JSON.stringify(options))
-//     fs.writeFileSync('./database/clients.json', JSON.stringify(t))
-//     res.status(200)
-//     res.send({msg: 'success',clients: options})
-//   })
-// app.route('/client/*')
-//   .put((req, res) => {
-//     let options = req.body
-//     let id = req.params[0]
-//     let allClient = readText('./database/clients.json')
-//     let t = JSON.parse(allClient)
-//     for (let i in t) {
-//       if (JSON.parse(t[i]).id === id) {
-//         t[i] = JSON.stringify(options)
-//         fs.writeFileSync('./database/clients.json', JSON.stringify(t))
-//         let response = {
-//           msg: 'success',
-//           clients: t[i]
-//         }
-//         res.status(200)
-//         res.send(response)
-//         return
-//       }
-//     }
-//     res.status(500)
-//     res.send({msg: 'failed'})
-//   })
-//   .delete((req, res) => {
-//     let id = req.params[0]
-//     let allClient = readText('./database/clients.json')
-//     let t = JSON.parse(allClient)
-//     for (let i in t) {
-//       if (JSON.parse(t[i]).id === id) {
-//         console.log(i)
-//         t.splice(i, 1)
-//         fs.writeFileSync('./database/clients.json', JSON.stringify(t))
-//         let response = {
-//           msg: 'success'
-//         }
-//         res.status(200)
-//         res.send(response)
-//         return
-//       }
-//     }
-//     res.status(500)
-//     res.send({msg: 'failed'})
-//   })
+app.route('/goods/file-upload')
+  .post((req, res) => {
+    console.log(req)
+    // 获得文件的临时路径
+    var tmp_path = req.files.thumbnail.path;
+    // 指定文件上传后的目录 - 示例为"images"目录。
+    var target_path = './images/' + req.files.thumbnail.name;
+    // 移动文件
+    fs.rename(tmp_path, target_path, function (err) {
+      if (err) throw err
+      // 删除临时文件夹文件,
+      fs.unlink(tmp_path, function () {
+        if (err) throw err
+        res.send('File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes')
+      })
+    })
+  })
 
 const server = app.listen(3000, function () {
   let host = server.address().address
