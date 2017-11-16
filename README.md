@@ -14,6 +14,7 @@ npm run dev
 # build for production with minification
 npm run build
 
+```
 商品管理系统
 # 简介：
 本项目是基于vue、typescript、nodejs、mysql的商品管理系统。
@@ -30,9 +31,8 @@ npm run build
 数据库配置 nodeService/mqsql/mqsql.js
 
 #功能介绍
-![Alt text](http://github.com/wbjqiqi/CargoManagement/raw/master/screenShoot/2.png)
-
-```
+自动补全
+![](./screenShoot/2.png)
 
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
