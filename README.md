@@ -14,18 +14,6 @@ npm run dev
 # build for production with minification
 npm run build
 
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
-
 商品管理系统
 # 简介：
 本项目是基于vue、typescript、nodejs、mysql的商品管理系统。
@@ -35,10 +23,12 @@ npm test
 # 环境需求：
 * node环境
 * mysql环境
+
 # 启动
 示例数据库位置 nodeService/database/*.sql
 服务端service nodeService、nodeService.js
 数据库配置 nodeService/mqsql/mqsql.js
+
 #功能介绍
 
 ```
