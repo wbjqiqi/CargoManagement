@@ -31,7 +31,7 @@ npm run build
 
 #功能介绍
 ```
-![Alt text] (https://github.com/wbjqiqi/CargoManagement/tree/master/screenShoot/2.png)
+![Alt text](http://github.com/wbjqiqi/CargoManagement/raw/master/screenShoot/2.png)
 
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
