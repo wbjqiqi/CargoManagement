@@ -30,7 +30,8 @@ npm run build
 数据库配置 nodeService/mqsql/mqsql.js
 
 #功能介绍
-![自动补全](https://github.com/wbjqiqi/CargoManagement/tree/master/screenShoot/2.png)
 ```
+![自动补全](https://github.com/wbjqiqi/CargoManagement/tree/master/screenShoot/2.png)
+
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
