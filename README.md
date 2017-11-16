@@ -27,9 +27,12 @@ npm run build
 * mysql环境
 
 # 启动
-示例数据库位置 nodeService/database/*.sql
-服务端service nodeService、nodeService.js
-数据库配置 nodeService/mqsql/mqsql.js
+* 示例数据库位置 
+nodeService/database/*.sql
+* 服务端service 
+nodeService、nodeService.js
+* 数据库配置 
+nodeService/mqsql/mqsql.js
 
 #功能介绍
 
