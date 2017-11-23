@@ -1,4 +1,4 @@
-import * as api from '../api/resource.js'
+import * as api from '../api/resource.ts'
 import * as types from './mutation-types'
 
 export const getAllGoods = ({commit}) => {

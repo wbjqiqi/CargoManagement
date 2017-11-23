@@ -4,8 +4,8 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const fs = require('fs')
 const connection = require('./mysql/mysql')
+const fs = require('fs')
 
 connection.connect()
 
@@ -36,7 +36,10 @@ app.use(bodyParser.json())
 app.route('/goods')
   .get((req, res) => {
     connection.query('SELECT * FROM GOODS_MESSAGE', function (error, results, fields) {
-      if (error) throw error
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
       res.status(200)
       res.send(results)
     })
@@ -54,7 +57,8 @@ app.route('/goods')
     str = str.substring(0, str.length - 1)
     connection.query('INSERT INTO GOODS_MESSAGE (' + key + ') VALUES (' + str + ')', (error, results, failed) => {
       if (error) {
-        throw error
+        res.status(500)
+        res.send({msg: 'failed'})
       }
       if (results.affectedRows) {
         res.status(200)
@@ -69,7 +73,10 @@ app.route('/goods')
 app.route('/goods/types')
   .get((req, res) => {
     connection.query('SELECT * FROM goods_brands', function (error, results, fields) {
-      if (error) throw error
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
       res.status(200)
       res.send(results)
     })
@@ -79,7 +86,8 @@ app.route('/goods/types')
     let id = Math.random().toString(36).substr(2)
     connection.query('INSERT INTO GOODS_BRANDS (name, id) VALUES ("' + name + '","' + id + '")', (error, results, failed) => {
       if (error) {
-        throw error
+        res.status(500)
+        res.send({msg: 'failed'})
       }
       if (results.affectedRows) {
         res.status(200)
@@ -95,7 +103,10 @@ app.route('/goods/types/:name')
   .get((req, res) => {
     let name = req.params.name
     connection.query('SELECT name,id,searchCount FROM GOODS_MESSAGE WHERE name LIKE "%' + name + '%"', function (error, results, fields) {
-      if (error) throw error
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
       res.status(200)
       res.send(results)
     })
@@ -106,7 +117,8 @@ app.route('/goods/types/id/:id')
     var str = 'DELETE FROM `goods_brands` WHERE id=\'' + id + '\''
     connection.query(str, (error, results, failed) => {
       if (error) {
-        throw error
+        res.status(500)
+        res.send({msg: 'failed'})
       }
       if (results.affectedRows) {
         var response = {
@@ -124,7 +136,10 @@ app.route('/goods/:name')
   .get((req, res) => {
     let name = req.params.name
     connection.query('SELECT name,id,searchCount FROM GOODS_MESSAGE WHERE name LIKE "%' + name + '%"', function (error, results, fields) {
-      if (error) throw error
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
       res.status(200)
       res.send(results)
     })
@@ -133,7 +148,10 @@ app.route('/goods/detail/:name')
   .get((req, res) => {
     let name = req.params.name
     connection.query('SELECT * FROM GOODS_MESSAGE WHERE name ="' + name + '"', function (error, results, fields) {
-      if (error) throw error
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
       res.status(200)
       res.send(results)
     })
@@ -142,7 +160,10 @@ app.route('/goods/keycode/:name')
   .get((req, res) => {
     let name = req.params.name
     connection.query('SELECT name,id,searchCount FROM GOODS_MESSAGE WHERE keycode LIKE "%' + name + '%"', function (error, results, fields) {
-      if (error) throw error
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
       res.status(200)
       res.send(results)
     })
@@ -151,7 +172,10 @@ app.route('/goods/id/:cargoId')
   .get((req, res) => {
     let id = req.params.cargoId
     connection.query('SELECT * FROM GOODS_MESSAGE WHERE id =\'' + id + '\'', function (error, results, fields) {
-      if (error) throw error
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
       connection.query('UPDATE `goods_message` SET `searchCount` = searchCount + 1 WHERE `goods_message`.`id` = ' + id, function () {
         res.status(200)
         res.send(results)
@@ -168,7 +192,8 @@ app.route('/goods/id/:cargoId')
     str = str.substring(0, str.length - 1)
     connection.query(str + ' WHERE id=' + id, (error, results, failed) => {
       if (error) {
-        throw error
+        res.status(500)
+        res.send({msg: 'failed'})
       }
       if (results.affectedRows) {
         var response = {
@@ -187,7 +212,8 @@ app.route('/goods/id/:cargoId')
     var str = 'DELETE FROM `goods_message` WHERE id=\'' + id + '\''
     connection.query(str, (error, results, failed) => {
       if (error) {
-        throw error
+        res.status(500)
+        res.send({msg: 'failed'})
       }
       if (results.affectedRows) {
         var response = {
@@ -201,21 +227,69 @@ app.route('/goods/id/:cargoId')
       }
     })
   })
-app.route('/goods/file-upload')
+app.route('/buckets')
+  .get((req, res) => {
+    var str = 'SELECT * FROM `goods_buckets`'
+    connection.query(str, (error, results, failed) => {
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
+      res.status(200)
+      res.send({buckets: results})
+    })
+  })
   .post((req, res) => {
-    console.log(req)
-    // 获得文件的临时路径
-    var tmp_path = req.files.thumbnail.path;
-    // 指定文件上传后的目录 - 示例为"images"目录。
-    var target_path = './images/' + req.files.thumbnail.name;
-    // 移动文件
-    fs.rename(tmp_path, target_path, function (err) {
-      if (err) throw err
-      // 删除临时文件夹文件,
-      fs.unlink(tmp_path, function () {
-        if (err) throw err
-        res.send('File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes')
-      })
+    var bucketKey = req.body.bucket_key
+    connection.query('SELECT * FROM `goods_buckets` WHERE bucket_key=' + bucketKey, (error, results, failed) => {
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
+      if (results === undefined) {
+        var str = 'INSERT INTO `goods_buckets` (bucket_key) VALUES ("' + bucketKey + '")'
+        connection.query(str, (error, results, failed) => {
+          if (error) {
+            res.status(500)
+            res.send({msg: 'failed'})
+          }
+          res.status(200)
+          res.send({data: results})
+        })
+      } else {
+        res.status(200)
+        res.send()
+      }
+    })
+  })
+app.route('/buckets/:bucket_key/objects/:object_key')
+  .get((req, res) => {
+    var str = 'SELECT imageData FROM `goods_buckets` WHERE object_key="' + req.params.object_key + '"'
+    connection.query(str, (error, results, failed) => {
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
+      console.log(results)
+      if (results.length){
+        let buffer = buffer(results[0].imageData)
+        res.status(200)
+        res.send(results)
+      } else {
+        res.status(200)
+        res.send()
+      }
+    })
+  })
+  .post((req, res) => {
+    let str = 'INSERT INTO `goods_buckets` (object_key, imageData) VALUES ("' + req.params.object_key + '", "' + req.body.data + '")'
+    connection.query(str, (error, results, failed) => {
+      if (error) {
+        res.status(500)
+        res.send({msg: 'failed'})
+      }
+      res.status(200)
+      res.send(results)
     })
   })
 

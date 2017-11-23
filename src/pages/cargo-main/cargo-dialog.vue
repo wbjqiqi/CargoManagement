@@ -24,15 +24,7 @@
       </el-form-item>
       <el-form-item>
         <el-col :span="12" style="text-align: center">
-          <el-upload
-            class="upload-demo"
-            :action="serverAddress + '/goods/file-upload'"
-            :on-remove="handleRemove"
-            :before-upload="beforeUpload"
-            :limit="1"
-            :file-list="fileList" style="line-height: 150px">
-            <el-button type="info" >点击上传图片</el-button>
-          </el-upload>
+          <input type="file" @change="selectImage" accept=".jpg,.jpeg">
         </el-col>
         <el-col :span="12" style="text-align: center">
           <img class="cargo-img"
@@ -62,7 +54,8 @@
   import Component from 'vue-class-component'
   import { mapGetters } from 'vuex'
   import BrandValidator from '../../business/validator/brand-validator'
-  import { MY_PHP_SERVICE } from '../../api/config'
+  import { CommonFunction } from '../../common/common'
+  import StorageUpload from '../../common/storage-upload'
 
   @Component({
     props: ['isEdit', 'goods', 'isOpenDialog'],
@@ -78,11 +71,9 @@
   })
   export default class cargoDiad extends Vue {
     //    data
-    serverAddress = MY_PHP_SERVICE
     openDialog = false
     validator = BrandValidator.validateName()
-    fileList = []
-    imgAddress = 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+    imgAddress = ''
 
     //    methods
     submitCargo () {
@@ -95,12 +86,13 @@
           this.$emit('submitCargo', data)
         }
       })
+      let storageUpload = new StorageUpload()
+      storageUpload.uploadStorage('cargo_management_cargo_img', this['goods'].id, this.imgAddress)
     }
-    handleRemove (file, fileList) {
-      console.log(file, fileList)
-    }
-    beforeUpload (file) {
-      console.log(file)
+    selectImage (e) {
+      CommonFunction.storageShow(e.target.files).then((res) => {
+        this.imgAddress = res.imageData
+      })
     }
 
     closeDialog () {

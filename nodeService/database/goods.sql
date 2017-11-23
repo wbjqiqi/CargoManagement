@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 2017-11-09 18:04:09
+-- Generation Time: 2017-11-23 18:24:45
 -- 服务器版本： 10.1.19-MariaDB
 -- PHP Version: 5.6.28
 
@@ -28,17 +28,43 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `goods_brands` (
   `id` varchar(100) NOT NULL,
-  `name` varchar(100) CHARACTER SET utf8mb4 NOT NULL
+  `name` varchar(100) CHARACTER SET utf8mb4 NOT NULL,
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- 转存表中的数据 `goods_brands`
 --
 
-INSERT INTO `goods_brands` (`id`, `name`) VALUES
-('1', '格力'),
-('2', '伊利'),
-('3', '优惠');
+INSERT INTO `goods_brands` (`id`, `name`, `create_at`) VALUES
+('1', '格力', '0000-00-00 00:00:00'),
+('2', '伊利', '0000-00-00 00:00:00'),
+('3', '优惠', '0000-00-00 00:00:00'),
+('kh871lk5now7d0ogt2au7hkt9', '双汇', '0000-00-00 00:00:00'),
+('wntm2gzcebykr15amk8svpldi', '蒙牛', '2017-11-23 14:50:52');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `goods_buckets`
+--
+
+CREATE TABLE `goods_buckets` (
+  `id` int(11) NOT NULL,
+  `bucket_key` varchar(30) NOT NULL,
+  `object_key` varchar(50) NOT NULL,
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `imageData` blob NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- 转存表中的数据 `goods_buckets`
+--
+
+INSERT INTO `goods_buckets` (`id`, `bucket_key`, `object_key`, `create_at`, `imageData`) VALUES
+(2, 'sss', '', '2017-11-23 15:24:52', ''),
+(14, 'cargo_management_cargo_img', '', '2017-11-23 15:49:08', ''),
+(15, '', 'n6olq636gp0yewzddexapds4i', '2017-11-23 16:46:09', 0x756e646566696e6564);
 
 -- --------------------------------------------------------
 
@@ -57,43 +83,20 @@ CREATE TABLE `goods_message` (
   `specific` varchar(200) CHARACTER SET utf8 NOT NULL,
   `image` varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `searchCount` int(100) NOT NULL,
-  `keycode` varchar(100) COLLATE utf8mb4_bin NOT NULL
+  `keycode` varchar(100) COLLATE utf8mb4_bin NOT NULL,
+  `imageData` blob NOT NULL,
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 --
 -- 转存表中的数据 `goods_message`
 --
 
-INSERT INTO `goods_message` (`id`, `name`, `brand`, `remark`, `price`, `number`, `rest`, `specific`, `image`, `searchCount`, `keycode`) VALUES
-('1', '挖掘机2', '蓝翔', '很好', 2999, 52, 3, '台', '/static/assets/images/th.jpg', 99, 'wjj'),
-('1x0empgtmxgf55ryxhux1dcxr', '', '', '', 0, 0, 0, '', '', 18, ''),
-('2', '空调', '格力', '格力空调', 2399, 6, 33, '无', '', 14, ''),
-('4m3ophgjs0x54pfzyo01u7hkt9', '', '', '', 0, 0, 0, '', '', 0, ''),
-('83navg4y63jclkplag9y0hpvi', '', '', '', 0, 0, 0, '', '', 0, ''),
-('8efuyex7gq4pjxtqm7cmu0udi', '', '', '', 0, 0, 0, '', '', 0, ''),
-('9uia1elm2ap4k691nnmefusor', '', '', '', 0, 0, 0, '', '', 0, ''),
-('aymu6iyer1in82vzg73uqsemi', '', '', '', 0, 0, 0, '', '', 0, ''),
-('b23s92bq92fcai5h6i83680k9', '', '', '', 0, 0, 0, '', '', 0, ''),
-('dnog83wrxoglmqhdq31f0qkt9', '', '', '', 0, 0, 0, '', '', 0, ''),
-('dtcgyp6msmr3k2z3dox2wvzpvi', '问问', '问问', '我问问', 2, 2, 22, '问问', '', 0, ''),
-('ez63mevuvvyiphfqthqhkhuxr', '', '', '', 0, 0, 0, '', '', 0, ''),
-('g8ud69n9vemidsil2l7919k9', '问问', '恩恩', '22', 22, 22, 222, '恩恩', '', 0, ''),
-('gl00ag2ibpni9dlhdhnwb3xr', '', '', '', 0, 0, 0, '', '', 0, ''),
-('jhwlyjhqkcptboi3l38p06bt9', '', '', '', 0, 0, 0, '', '', 0, ''),
-('kn35zqnaeg0eei16cf3hj8aor', '', '', '', 0, 0, 0, '', '', 0, ''),
-('kwbart0140vt6blvg7u70hpvi', '', '', '', 0, 0, 0, '', '', 0, ''),
-('m2ne4495trk846de106zb0529', '', '', '', 0, 0, 0, '', '', 0, ''),
-('m2rp6ymk0ccuezw9hc6561or', '', '', '', 0, 0, 0, '', '', 0, ''),
-('m8dzbl4u1i0tj046v84kro1or', '', '', '', 0, 0, 0, '', '', 0, ''),
-('n6olq636gp0yewzddexapds4i', '哇哈哈', '伊利', '好喝', 7, 6, 300, '瓶', '', 0, ''),
-('ng7dye0h31pbqz4000w1att9', '', '', '', 0, 0, 0, '', '', 0, ''),
-('oavev6lwziuyehflgvij7zaor', '', '', '', 0, 0, 0, '', '', 0, ''),
-('pz2wq42imvgume076paybke29', '', '', '', 0, 0, 0, '', '', 0, ''),
-('qswpfummr8q5uidyjls7nwmi', '333', '伊利', '333', 333, 333, 333, '333', '', 0, '333'),
-('vz39l3caiy79zvco5lz4u0udi', '空调', '优惠', '33', 22, 33, 22, '22', '', 0, 'kt'),
-('wdqggwfbllwufdzc2jf6flxr', '', '', '', 0, 0, 0, '', '', 0, ''),
-('yqkkrt9q47v8j42ofejulq5mi', '', '', '', 0, 0, 0, '', '', 0, ''),
-('zq3q0ufz88k690w292ehwu3di', '', '', '', 0, 0, 0, '', '', 0, '');
+INSERT INTO `goods_message` (`id`, `name`, `brand`, `remark`, `price`, `number`, `rest`, `specific`, `image`, `searchCount`, `keycode`, `imageData`, `create_at`) VALUES
+('2', '空调', '格力', '格力空调', 2399, 6, 33, '无', '', 25, '', '', '2017-11-23 16:30:26'),
+('n6olq636gp0yewzddexapds4i', '哇哈哈', '伊利', '好喝', 7, 6, 300, '瓶', '', 0, '', '', '2017-11-23 14:51:59'),
+('qswpfummr8q5uidyjls7nwmi', '333', '伊利', '333', 333, 333, 333, '333', '', 0, '333', '', '2017-11-23 14:51:59'),
+('vz39l3caiy79zvco5lz4u0udi', '空调', '优惠', '33', 22, 33, 22, '22', '', 0, 'kt', '', '2017-11-23 14:51:59');
 
 --
 -- Indexes for dumped tables
@@ -106,11 +109,26 @@ ALTER TABLE `goods_brands`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `goods_buckets`
+--
+ALTER TABLE `goods_buckets`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `goods_message`
 --
 ALTER TABLE `goods_message`
   ADD PRIMARY KEY (`id`);
 
+--
+-- 在导出的表使用AUTO_INCREMENT
+--
+
+--
+-- 使用表AUTO_INCREMENT `goods_buckets`
+--
+ALTER TABLE `goods_buckets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
