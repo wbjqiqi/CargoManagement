@@ -26,12 +26,14 @@ app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS')
   res.header('X-Powered-By', ' 3.2.1')
   res.header('Content-Type', 'application/json;charset=utf-8')
+  // res.header('Content-Type', 'multipart/form-data;charset=utf-8')
   next()
 })
 
-app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
-// app.use(express.bodyParser({ uploadDir: "./public/upload" }));
+// app.use(bodyParser.raw());
+app.use(bodyParser.urlencoded({extended: true}))
+// app.use(bodyParser({uploadDir:'./uploads'}));
 
 app.route('/goods')
   .get((req, res) => {
@@ -201,22 +203,21 @@ app.route('/goods/id/:cargoId')
       }
     })
   })
-app.route('/goods/file-upload')
-  .post((req, res) => {
-    console.log(req)
-    // 获得文件的临时路径
-    var tmp_path = req.files.thumbnail.path;
-    // 指定文件上传后的目录 - 示例为"images"目录。
-    var target_path = './images/' + req.files.thumbnail.name;
-    // 移动文件
-    fs.rename(tmp_path, target_path, function (err) {
-      if (err) throw err
-      // 删除临时文件夹文件,
-      fs.unlink(tmp_path, function () {
-        if (err) throw err
-        res.send('File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes')
-      })
-    })
+app.post('/goods/file-upload', (req, res) => {
+    console.log(req.files)
+    // // 获得文件的临时路径
+    // var tmp_path = req.files.thumbnail.path;
+    // // 指定文件上传后的目录 - 示例为"images"目录。
+    // var target_path = './images/' + req.files.thumbnail.name;
+    // // 移动文件
+    // fs.rename(tmp_path, target_path, function (err) {
+    //   if (err) throw err
+    //   // 删除临时文件夹文件,
+    //   fs.unlink(tmp_path, function () {
+    //     if (err) throw err
+    //     res.send('File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes')
+    //   })
+    // })
   })
 
 const server = app.listen(3000, function () {

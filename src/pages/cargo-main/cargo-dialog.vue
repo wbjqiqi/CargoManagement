@@ -1,6 +1,6 @@
 <template>
-  <el-dialog size="small" :title="isEdit?'编辑':'新建'" v-model="openDialog" validator="false" :beforeClose="closeDialog">
-    <el-form @keyup.enter.native="submitCargo()" labelPosition="left" :model="goods"
+  <el-dialog size="small" :title="isEdit?'编辑':'新建'" v-model="openDialog" :beforeClose="closeDialog">
+    <el-form @keyup.enter.native="validateData" labelPosition="left" :model="goods"
              ref="clientBox" :rules="validator">
       <el-form-item label="商品品牌" prop="brand">
         <el-radio-group v-model="goods.brand" v-for="label in getBrandType" :key="label.text">
@@ -14,13 +14,13 @@
         <el-input v-model="goods.specific" auto-complete="off" placeholder="商品的规格（例：24/箱）"></el-input>
       </el-form-item>
       <el-form-item label="数量" prop="number">
-        <el-input v-model="goods.number" auto-complete="off" placeholder="商品的数量，只能是数字"></el-input>
+        <el-input v-model.number="goods.number" auto-complete="off" placeholder="商品的数量，只能是数字"></el-input>
       </el-form-item>
       <el-form-item label="价格" prop="price">
-        <el-input v-model="goods.price" auto-complete="off" placeholder="商品的价格，只能是数字"></el-input>
+        <el-input v-model.number="goods.price" auto-complete="off" placeholder="商品的价格，只能是数字"></el-input>
       </el-form-item>
       <el-form-item label="库存数量" prop="rest">
-        <el-input v-model="goods.rest" auto-complete="off" placeholder="库存还剩多少？只能是数字"></el-input>
+        <el-input v-model.number="goods.rest" auto-complete="off" placeholder="库存还剩多少？只能是数字"></el-input>
       </el-form-item>
       <el-form-item>
         <el-col :span="12" style="text-align: center">
@@ -31,8 +31,9 @@
             :before-upload="beforeUpload"
             :limit="1"
             :file-list="fileList" style="line-height: 150px">
-            <el-button type="info" >点击上传图片</el-button>
+            <el-button type="info">点击上传图片</el-button>
           </el-upload>
+          <input type="file" name="aaa">
         </el-col>
         <el-col :span="12" style="text-align: center">
           <img class="cargo-img"
@@ -51,54 +52,79 @@
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeDialog">取 消</el-button>
       <el-button type="primary"
-                 @click="submitCargo()">确 定
+                 @click="validateData">确 定
       </el-button>
     </div>
   </el-dialog>
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
-  import Component from 'vue-class-component'
-  import { mapGetters } from 'vuex'
-  import BrandValidator from '../../business/validator/brand-validator'
+  import { Component, Emit, Provide, Prop, Vue, Watch } from 'vue-property-decorator'
+  import { Getter } from 'vuex-class'
   import { MY_PHP_SERVICE } from '../../api/config'
 
-  @Component({
-    props: ['isEdit', 'goods', 'isOpenDialog'],
-    watch: {
-      isOpenDialog () {
-        this.openDialog = this.isOpenDialog
-      },
-      fileList (val) {
-        console.log('fileList', val)
-      }
-    },
-    computed: mapGetters(['getBrandType'])
-  })
+  const validName = (rule, value, callback) => {
+    if (value === '') {
+      callback(new Error('请输入商品名称'))
+    }
+  }
+
+  @Component
   export default class cargoDiad extends Vue {
+    @Prop()
+    isEdit: boolean
+    @Prop()
+    goods
+    @Prop()
+    isOpenDialog: boolean
     //    data
+    @Provide()
     serverAddress = MY_PHP_SERVICE
+    @Provide()
     openDialog = false
-    validator = BrandValidator.validateName()
+    @Provide()
+    validator = {
+      name: [
+        {validator: validName, trigger: 'blur'}
+      ],
+      number: [
+        {required: true, message: '请输入数量'},
+        {type: 'number', message: '数量必须是数字'}
+      ],
+      price: [
+        {required: true, message: '请输入价格'},
+        {type: 'number', message: '价格必须是数字'}
+      ],
+      rest: [
+        {required: true, message: '请输入库存数量'},
+        {type: 'number', message: '库存数量必须是数字'}
+      ]
+    }
+    @Provide()
     fileList = []
+    @Provide()
     imgAddress = 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
 
+    @Getter('getBrandType') getBrandType
+
     //    methods
-    submitCargo () {
+    validateData () {
       let data = {
         model: this.$refs.clientBox['model'],
-        isEdit: this['isEdit']
+        isEdit: this.isEdit
       }
-      this.$refs.clientBox['validate']((valide) => {
-        if (valide) {
-          this.$emit('submitCargo', data)
-        }
-      })
+      //      this.$refs.clientBox['validate']((valide) => {
+      //        console.log(valide)
+      //        if (valide) {
+      this.submitCargo(data)
+      //        }
+      //      })
     }
+
     handleRemove (file, fileList) {
       console.log(file, fileList)
     }
+
     beforeUpload (file) {
       console.log(file)
     }
@@ -106,12 +132,26 @@
     closeDialog () {
       this.$emit('closeDialog')
     }
+
+    @Emit()
+    submitCargo (data) {
+    }
+
+    @Watch('isOpenDialog')
+    shiftDialog () {
+      this.openDialog = this.isOpenDialog
+    }
+
+    @Watch('fileList')
+    upDateFileList (newVal) {
+      console.log('fileList', newVal)
+    }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-  .cargo-img{
+  .cargo-img {
     width: 150px;
     height: 150px;
   }
