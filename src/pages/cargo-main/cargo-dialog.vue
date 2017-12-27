@@ -23,19 +23,24 @@
         <el-input v-model.number="goods.rest" auto-complete="off" placeholder="库存还剩多少？只能是数字"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-col :span="12" style="text-align: center">
+        <el-col :span="12">
           <el-upload
             class="upload-demo"
-            :action="serverAddress + '/goods/file-upload'"
+            :action="''"
+            :drag="true"
             :on-remove="handleRemove"
-            :before-upload="beforeUpload"
-            :limit="1"
-            :file-list="fileList" style="line-height: 150px">
-            <el-button type="info">点击上传图片</el-button>
+            limit="1"
+            ref="upload"
+            list-type="picture-card"
+            :auto-upload="false"
+            :file-list="fileList"
+            :show-file-list="false"
+            :on-change="changImage"
+            style="line-height: 150px">
+            <el-button type="info">点击或拖拽选择</el-button>
           </el-upload>
-          <input type="file" name="aaa">
         </el-col>
-        <el-col :span="12" style="text-align: center">
+        <el-col :span="6" style="text-align: center">
           <img class="cargo-img"
                :src="imgAddress"
                alt="">
@@ -61,7 +66,6 @@
 <script lang="ts">
   import { Component, Emit, Provide, Prop, Vue, Watch } from 'vue-property-decorator'
   import { Getter } from 'vuex-class'
-  import { MY_PHP_SERVICE } from '../../api/config'
 
   const validName = (rule, value, callback) => {
     if (value === '') {
@@ -78,8 +82,6 @@
     @Prop()
     isOpenDialog: boolean
     //    data
-    @Provide()
-    serverAddress = MY_PHP_SERVICE
     @Provide()
     openDialog = false
     @Provide()
@@ -103,15 +105,17 @@
     @Provide()
     fileList = []
     @Provide()
-    imgAddress = 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+    imgAddress = ''
 
     @Getter('getBrandType') getBrandType
 
     //    methods
     validateData () {
+      console.log(this.$refs.upload)
       let data = {
         model: this.$refs.clientBox['model'],
-        isEdit: this.isEdit
+        isEdit: this.isEdit,
+        upload: this.$refs.upload
       }
       //      this.$refs.clientBox['validate']((valide) => {
       //        console.log(valide)
@@ -125,12 +129,12 @@
       console.log(file, fileList)
     }
 
-    beforeUpload (file) {
-      console.log(file)
-    }
-
     closeDialog () {
       this.$emit('closeDialog')
+    }
+
+    changImage (file, fileList) {
+      this.imgAddress = file.url
     }
 
     @Emit()
@@ -140,11 +144,6 @@
     @Watch('isOpenDialog')
     shiftDialog () {
       this.openDialog = this.isOpenDialog
-    }
-
-    @Watch('fileList')
-    upDateFileList (newVal) {
-      console.log('fileList', newVal)
     }
   }
 </script>

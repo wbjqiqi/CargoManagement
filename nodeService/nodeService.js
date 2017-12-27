@@ -5,6 +5,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const fs = require('fs')
+const uploadController = require('./uploadController')
 const connection = require('./mysql/mysql')
 
 connection.connect()
@@ -31,9 +32,7 @@ app.all('*', function (req, res, next) {
 })
 
 app.use(bodyParser.json())
-// app.use(bodyParser.raw());
 app.use(bodyParser.urlencoded({extended: true}))
-// app.use(bodyParser({uploadDir:'./uploads'}));
 
 app.route('/goods')
   .get((req, res) => {
@@ -44,7 +43,7 @@ app.route('/goods')
     })
   })
   .post((req, res) => {
-    var options = req.body;
+    var options = req.body
     let id = Math.random().toString(36).substr(2)
     var key = '`id`,'
     var str = '\'' + id + '\','
@@ -162,7 +161,7 @@ app.route('/goods/id/:cargoId')
   })
   .post((req, res) => {
     var id = req.params.cargoId
-    var options = req.body;
+    var options = req.body
     var str = 'UPDATE `goods_message` SET '
     for (i in options) {
       str += '`' + i + '`=\'' + options[i] + '\','
@@ -203,22 +202,37 @@ app.route('/goods/id/:cargoId')
       }
     })
   })
-app.post('/goods/file-upload', (req, res) => {
-    console.log(req.files)
-    // // 获得文件的临时路径
-    // var tmp_path = req.files.thumbnail.path;
-    // // 指定文件上传后的目录 - 示例为"images"目录。
-    // var target_path = './images/' + req.files.thumbnail.name;
-    // // 移动文件
-    // fs.rename(tmp_path, target_path, function (err) {
-    //   if (err) throw err
-    //   // 删除临时文件夹文件,
-    //   fs.unlink(tmp_path, function () {
-    //     if (err) throw err
-    //     res.send('File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes')
-    //   })
-    // })
-  })
+
+app.post('/goods/file-upload/:id', uploadController.dataInput, () => {
+
+})
+// app.post('/goods/file-upload', (req, res) => {
+//   console.log(req.files)
+//   var chunks = []
+//   var size = 0
+//   req.on('data', function (chunk) {
+//     chunks.push(chunk)
+//     size += chunk.length
+//   })
+//   req.on('end', function () {
+//     var buffer = Buffer.concat(chunks, size)
+//     console.log(buffer)
+//   })
+//   console.log(size)
+//   // // 获得文件的临时路径
+//   // var tmp_path = req.files.thumbnail.path;
+//   // // 指定文件上传后的目录 - 示例为"images"目录。
+//   // var target_path = './images/' + req.files.thumbnail.name;
+//   // // 移动文件
+//   // fs.rename(tmp_path, target_path, function (err) {
+//   //   if (err) throw err
+//   //   // 删除临时文件夹文件,
+//   //   fs.unlink(tmp_path, function () {
+//   //     if (err) throw err
+//   //     res.send('File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes')
+//   //   })
+//   // })
+// })
 
 const server = app.listen(3000, function () {
   let host = server.address().address
