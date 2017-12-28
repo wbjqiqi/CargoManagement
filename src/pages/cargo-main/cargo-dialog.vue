@@ -1,6 +1,6 @@
 <template>
-  <el-dialog size="small" :title="isEdit?'编辑':'新建'" v-model="openDialog" validator="false" :beforeClose="closeDialog">
-    <el-form @keyup.enter.native="submitCargo()" labelPosition="left" :model="goods"
+  <el-dialog size="small" :title="isEdit?'编辑':'新建'" v-model="openDialog" :beforeClose="closeDialog">
+    <el-form @keyup.enter.native="uploadImage" labelPosition="left" :model="goods"
              ref="clientBox" :rules="validator">
       <el-form-item label="商品品牌" prop="brand">
         <el-radio-group v-model="goods.brand" v-for="label in getBrandType" :key="label.text">
@@ -14,21 +14,34 @@
         <el-input v-model="goods.specific" auto-complete="off" placeholder="商品的规格（例：24/箱）"></el-input>
       </el-form-item>
       <el-form-item label="数量" prop="number">
-        <el-input v-model="goods.number" auto-complete="off" placeholder="商品的数量，只能是数字"></el-input>
+        <el-input v-model.number="goods.number" auto-complete="off" placeholder="商品的数量，只能是数字"></el-input>
       </el-form-item>
       <el-form-item label="价格" prop="price">
-        <el-input v-model="goods.price" auto-complete="off" placeholder="商品的价格，只能是数字"></el-input>
+        <el-input v-model.number="goods.price" auto-complete="off" placeholder="商品的价格，只能是数字"></el-input>
       </el-form-item>
       <el-form-item label="库存数量" prop="rest">
-        <el-input v-model="goods.rest" auto-complete="off" placeholder="库存还剩多少？只能是数字"></el-input>
+        <el-input v-model.number="goods.rest" auto-complete="off" placeholder="库存还剩多少？只能是数字"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-col :span="12" style="text-align: center">
-          <input type="file" @change="selectImage" accept=".jpg,.jpeg">
+        <el-col :span="12">
+          <el-upload
+            class="upload-demo"
+            :action="actionAddress"
+            :drag="true"
+            :limit="1"
+            ref="upload"
+            list-type="picture-card"
+            :auto-upload="false"
+            :file-list="fileList"
+            :show-file-list="false"
+            :on-change="changImage"
+            style="line-height: 150px">
+            <el-button type="info">点击或拖拽选择</el-button>
+          </el-upload>
         </el-col>
-        <el-col :span="12" style="text-align: center">
+        <el-col :span="6" style="text-align: center">
           <img class="cargo-img"
-               :src="imgAddress"
+               :src="imgAddress || '/images/' + goods.fileName"
                alt="">
         </el-col>
       </el-form-item>
@@ -43,67 +56,120 @@
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeDialog">取 消</el-button>
       <el-button type="primary"
-                 @click="submitCargo()">确 定
+                 @click="uploadImage">确 定
       </el-button>
     </div>
   </el-dialog>
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
-  import Component from 'vue-class-component'
-  import { mapGetters } from 'vuex'
-  import BrandValidator from '../../business/validator/brand-validator'
-  import { CommonFunction } from '../../common/common'
-  import StorageUpload from '../../common/storage-upload'
+  import { Component, Emit, Provide, Prop, Vue, Watch } from 'vue-property-decorator'
+  import { Getter } from 'vuex-class'
+  import { MY_PHP_SERVICE } from '../../api/config'
 
-  @Component({
-    props: ['isEdit', 'goods', 'isOpenDialog'],
-    watch: {
-      isOpenDialog () {
-        this.openDialog = this.isOpenDialog
-      },
-      fileList (val) {
-        console.log('fileList', val)
-      }
-    },
-    computed: mapGetters(['getBrandType'])
-  })
+  const validName = (rule, value, callback) => {
+    if (value === '') {
+      callback(new Error('请输入商品名称'))
+    }
+  }
+
+  @Component
   export default class cargoDiad extends Vue {
+    @Prop()
+    isEdit: boolean
+    @Prop()
+    goods
+    @Prop()
+    isOpenDialog: boolean
+
     //    data
+    @Provide()
     openDialog = false
-    validator = BrandValidator.validateName()
+    @Provide()
+    validator = {
+      name: [
+        {validator: validName, trigger: 'blur'}
+      ],
+      number: [
+        {required: true, message: '请输入数量'},
+        {type: 'number', message: '数量必须是数字'}
+      ],
+      price: [
+        {required: true, message: '请输入价格'},
+        {type: 'number', message: '价格必须是数字'}
+      ],
+      rest: [
+        {required: true, message: '请输入库存数量'},
+        {type: 'number', message: '库存数量必须是数字'}
+      ]
+    }
+    @Provide()
+    fileList = []
+    @Provide()
     imgAddress = ''
+    @Provide()
+    serverAddress = MY_PHP_SERVICE + '/goods/file-upload/'
+    @Provide()
+    actionAddress = ''
+
+    @Getter('getBrandType') getBrandType
 
     //    methods
-    submitCargo () {
+    uploadImage () {
+      console.log(this.$refs.upload)
+      let upload = this.$refs.upload
+      let uploadFiles = upload['uploadFiles']
+      if (uploadFiles.length) {
+        let uploadFile = uploadFiles[uploadFiles.length - 1]
+        let type = uploadFile.raw.type.split('/')[1]
+        upload['uploadFiles'] = [uploadFile]
+        this.validateData(`${uploadFile.uid}.${type}`)
+        upload['submit']()
+      } else {
+        this.validateData()
+      }
+    }
+
+    validateData (fileName?) {
+      // 为了只上传最后一张
+//      this.fileList = [this.fileList[this.fileList.length - 1]]
       let data = {
         model: this.$refs.clientBox['model'],
-        isEdit: this['isEdit']
+        isEdit: this.isEdit,
+        fileName: fileName
       }
-      this.$refs.clientBox['validate']((valide) => {
-        if (valide) {
-          this.$emit('submitCargo', data)
-        }
-      })
-      let storageUpload = new StorageUpload()
-      storageUpload.uploadStorage('cargo_management_cargo_img', this['goods'].id, this.imgAddress)
-    }
-    selectImage (e) {
-      CommonFunction.storageShow(e.target.files).then((res) => {
-        this.imgAddress = res.imageData
-      })
+//            this.$refs.clientBox['validate']((valide) => {
+//              console.log(valide)
+//              if (valide) {
+      this.submitCargo(data)
+      //        }
+      //      })
     }
 
     closeDialog () {
       this.$emit('closeDialog')
+    }
+
+    changImage (file, fileList) {
+      console.log(file)
+      this.imgAddress = file.url
+      this.actionAddress = this.serverAddress + file.uid
+    }
+
+    @Emit()
+    submitCargo (data) {
+    }
+
+    @Watch('isOpenDialog')
+    shiftDialog () {
+      this.openDialog = this.isOpenDialog
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-  .cargo-img{
+  .cargo-img {
     width: 150px;
     height: 150px;
   }

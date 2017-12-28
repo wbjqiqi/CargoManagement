@@ -21,25 +21,26 @@
       </el-col>
     </div>
     <div class="search-router">
-      <router-view :colorArray="colorArray" @edit-cargo="editCargo" @delete-cargo="deleteCargo" @new-cargo="newCargo" @get-all-cargo="getAllCargo" @add-brand-type="addBrandType"></router-view>
+      <router-view :colorArray="colorArray" @edit-cargo="editCargo" @delete-cargo="deleteCargo" @new-cargo="newCargo"
+                   @get-all-cargo="getAllCargo" @add-brand-type="addBrandType"></router-view>
     </div>
     <CargoDialod :isOpenDialog="isOpenDialog" :isEdit="isEdit" :goods="goods" @closeDialog="closeThisDialog"
-                 @submitCargo="submitCargo" ></CargoDialod>
-    <new-type-dialog :newTypeBox="newTypeBox" :colorArray="colorArray" @closeTypeDialog="newTypeBox=false" v-if="newTypeBox"></new-type-dialog>
+                 @submit-cargo="submitCargo"></CargoDialod>
+    <new-type-dialog :newTypeBox="newTypeBox" :colorArray="colorArray" @closeTypeDialog="newTypeBox=false"
+                     v-if="newTypeBox"></new-type-dialog>
   </div>
 </template>
 <script lang="ts">
-  import Vue from 'vue'
-  import { mapState, mapGetters } from 'vuex'
-  import Component from 'vue-class-component'
+  import { Component, Provide, Vue } from 'vue-property-decorator'
+  import { Action, Getter, State } from 'vuex-class'
 
   import CargoDialod from './cargo-main/cargo-dialog.vue'
   import NewTypeDialog from './cargo-main/new-type-dialog.vue'
+  import { MessageHelper } from '../utils/message-helper'
+  import { ConfirmHelper } from '../utils/confirm-helper'
+  import { MY_PHP_SERVICE } from '../api/config'
+
   @Component({
-    computed: {
-      ...mapState(['Goods']),
-      ...mapGetters(['isOpenDialog'])
-    },
     components: {
       CargoDialod,
       NewTypeDialog
@@ -47,10 +48,15 @@
   })
   export default class search extends Vue {
     // data
+    @Provide()
     searchContent = ''
+    @Provide()
     searchType = ''
+    @Provide()
     state4 = ''
+    @Provide()
     timeout = null
+    @Provide()
     goods = {
       id: '',
       name: '',
@@ -62,18 +68,38 @@
       rest: '',
       image: ''
     }
+    @Provide()
     isEdit = false
+    @Provide()
     newTypeBox = false
+    @Provide()
     colorArray = ['primary', 'success', 'warning', 'danger', 'Dark Blue', 'Light Blue', 'Gray', 'Light Black', 'Extra Light Silver']
+    @Provide()
+    serverAddress = MY_PHP_SERVICE
+
+    // vuex
+    @Action('searchByName') searchByName
+    @Action('searchByKeycode') searchByKeycode
+    @Action('searchById') searchByIdAction
+    @Action('searchByAllName') searchByAllNameAction
+    @Action('openDialog') openDialog
+    @Action('closeDialog') closeDialog
+    @Action('updateCargo') updateCargo
+    @Action('newCargo') newCargoAction
+    @Action('deleteCargo') deleteCargoAction
+    @Action('getAllGoods') getAllGoods
+    @Action('getAllGoodsType') getAllGoodsType
+    @State('Goods') Goods
+    @Getter('isOpenDialog') isOpenDialog
 
     // methods
     querySearchAsync (queryString, cb) {
       // 效率模式 关闭
       // 性能模式 打开
       // if (!queryString) return
-      this.$store.dispatch('searchByName', queryString).then((res) => {
+      this.searchByName(queryString).then((res) => {
         if (!res.length) {
-          this.$store.dispatch('searchByKeycode', queryString)
+          this.searchByKeycode(queryString)
         }
       })
 
@@ -90,15 +116,15 @@
     }
 
     searchById (id) {
-      this.$store.dispatch('searchById', id)
+      this.searchByIdAction(id)
     }
 
     searchByAllName (name) {
-      this.$store.dispatch('searchByAllName', name)
+      this.searchByAllNameAction(name)
     }
 
     handleSelect (item) {
-      this.searchByAllName(item.value)
+      this.searchByAllNameAction(item.value)
       this.$router.push({name: 'searchMain', params: {cargoId: item.id}})
     }
 
@@ -119,77 +145,58 @@
     newCargo () {
       this.resetGoods()
       this.isEdit = false
-      this.$store.dispatch('openDialog')
+      this.openDialog()
     }
 
     editCargo (id) {
-      this.searchById(id)
+      this.searchByIdAction(id)
       this.goods = this['Goods'].goods[0]
       this.isEdit = true
-      this.$store.dispatch('openDialog')
+      this.openDialog()
     }
 
     closeThisDialog () {
-      this.$store.dispatch('closeDialog')
+      this.closeDialog()
     }
 
     submitCargo (info) {
       let data = info.model
+      if (info.fileName) {
+        data.fileName = info.fileName
+      }
       if (info.isEdit) {
-        this.$store.dispatch('updateCargo', data).then(() => {
+        this.updateCargo(data).then((res) => {
           this.closeThisDialog()
-          this['$message']({
-            type: 'success',
-            message: '更新成功'
-          })
+          MessageHelper.successMessage('更新成功')
         }).catch(err => {
-          this['$message']({
-            type: 'error',
-            message: '更新失败'
-          })
+          MessageHelper.errorMessage('更新失败')
           console.log(err)
         })
       } else {
         delete data.id
-        this.$store.dispatch('newCargo', data).then((res) => {
+        this.newCargoAction(data).then((res) => {
           this.closeThisDialog()
-          this['$message']({
-            type: 'success',
-            message: '添加成功'
-          })
+//          this.uploadImage(info.upload, res.id)
+          MessageHelper.successMessage('添加成功')
           this.handleSelect(res)
-        }).catch(err => {
-          this['$message']({
-            type: 'error',
-            message: '添加失败'
-          })
-          console.log(err)
+        }).catch(() => {
+          MessageHelper.errorMessage('添加失败')
         })
       }
     }
 
     deleteCargo (id) {
-      this.$confirm('此操作将删除商品信息, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$store.dispatch('deleteCargo', id).then(() => {
-          this['$message']({
-            type: 'success',
-            message: '删除成功'
-          })
+      ConfirmHelper.warningMessage('此操作将删除商品信息, 是否继续?', '提示').then(() => {
+        this.deleteCargoAction(id).then(() => {
+          MessageHelper.successMessage('删除成功')
         })
       }).catch(() => {
-        this['$message']({
-          type: 'info',
-          message: '已取消'
-        })
+        MessageHelper.infoMessage('已取消')
       })
     }
 
     getAllCargo () {
-      this.$store.dispatch('getAllGoods')
+      this.getAllGoods()
     }
 
     addBrandType () {
@@ -197,7 +204,7 @@
     }
 
     created () {
-      this.$store.dispatch('getAllGoodsType')
+      this.getAllGoodsType()
     }
   }
 </script>

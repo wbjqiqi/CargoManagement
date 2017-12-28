@@ -6,6 +6,8 @@ const app = express()
 const bodyParser = require('body-parser')
 const connection = require('./mysql/mysql')
 const fs = require('fs')
+const uploadController = require('./uploadController')
+const connection = require('./mysql/mysql')
 
 connection.connect()
 
@@ -26,12 +28,12 @@ app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS')
   res.header('X-Powered-By', ' 3.2.1')
   res.header('Content-Type', 'application/json;charset=utf-8')
+  // res.header('Content-Type', 'multipart/form-data;charset=utf-8')
   next()
 })
 
-app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
-// app.use(express.bodyParser({ uploadDir: "./public/upload" }));
+app.use(bodyParser.urlencoded({extended: true}))
 
 app.route('/goods')
   .get((req, res) => {
@@ -45,7 +47,7 @@ app.route('/goods')
     })
   })
   .post((req, res) => {
-    var options = req.body;
+    var options = req.body
     let id = Math.random().toString(36).substr(2)
     var key = '`id`,'
     var str = '\'' + id + '\','
@@ -184,7 +186,7 @@ app.route('/goods/id/:cargoId')
   })
   .post((req, res) => {
     var id = req.params.cargoId
-    var options = req.body;
+    var options = req.body
     var str = 'UPDATE `goods_message` SET '
     for (i in options) {
       str += '`' + i + '`=\'' + options[i] + '\','
@@ -227,71 +229,37 @@ app.route('/goods/id/:cargoId')
       }
     })
   })
-app.route('/buckets')
-  .get((req, res) => {
-    var str = 'SELECT * FROM `goods_buckets`'
-    connection.query(str, (error, results, failed) => {
-      if (error) {
-        res.status(500)
-        res.send({msg: 'failed'})
-      }
-      res.status(200)
-      res.send({buckets: results})
-    })
-  })
-  .post((req, res) => {
-    var bucketKey = req.body.bucket_key
-    connection.query('SELECT * FROM `goods_buckets` WHERE bucket_key=' + bucketKey, (error, results, failed) => {
-      if (error) {
-        res.status(500)
-        res.send({msg: 'failed'})
-      }
-      if (results === undefined) {
-        var str = 'INSERT INTO `goods_buckets` (bucket_key) VALUES ("' + bucketKey + '")'
-        connection.query(str, (error, results, failed) => {
-          if (error) {
-            res.status(500)
-            res.send({msg: 'failed'})
-          }
-          res.status(200)
-          res.send({data: results})
-        })
-      } else {
-        res.status(200)
-        res.send()
-      }
-    })
-  })
-app.route('/buckets/:bucket_key/objects/:object_key')
-  .get((req, res) => {
-    var str = 'SELECT imageData FROM `goods_buckets` WHERE object_key="' + req.params.object_key + '"'
-    connection.query(str, (error, results, failed) => {
-      if (error) {
-        res.status(500)
-        res.send({msg: 'failed'})
-      }
-      console.log(results)
-      if (results.length){
-        let buffer = buffer(results[0].imageData)
-        res.status(200)
-        res.send(results)
-      } else {
-        res.status(200)
-        res.send()
-      }
-    })
-  })
-  .post((req, res) => {
-    let str = 'INSERT INTO `goods_buckets` (object_key, imageData) VALUES ("' + req.params.object_key + '", "' + req.body.data + '")'
-    connection.query(str, (error, results, failed) => {
-      if (error) {
-        res.status(500)
-        res.send({msg: 'failed'})
-      }
-      res.status(200)
-      res.send(results)
-    })
-  })
+
+app.post('/goods/file-upload/:id', uploadController.dataInput, () => {
+
+})
+// app.post('/goods/file-upload', (req, res) => {
+//   console.log(req.files)
+//   var chunks = []
+//   var size = 0
+//   req.on('data', function (chunk) {
+//     chunks.push(chunk)
+//     size += chunk.length
+//   })
+//   req.on('end', function () {
+//     var buffer = Buffer.concat(chunks, size)
+//     console.log(buffer)
+//   })
+//   console.log(size)
+//   // // 获得文件的临时路径
+//   // var tmp_path = req.files.thumbnail.path;
+//   // // 指定文件上传后的目录 - 示例为"images"目录。
+//   // var target_path = './images/' + req.files.thumbnail.name;
+//   // // 移动文件
+//   // fs.rename(tmp_path, target_path, function (err) {
+//   //   if (err) throw err
+//   //   // 删除临时文件夹文件,
+//   //   fs.unlink(tmp_path, function () {
+//   //     if (err) throw err
+//   //     res.send('File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes')
+//   //   })
+//   // })
+// })
 
 const server = app.listen(3000, function () {
   let host = server.address().address

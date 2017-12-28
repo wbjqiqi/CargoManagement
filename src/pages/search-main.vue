@@ -31,7 +31,7 @@
             </el-form>
           </el-col>
           <el-col :span="6">
-            <img src="../assets/images/th.jpg" alt="" style="height: 180px">
+            <img :src="serverAddress + '/images/' + props.row.fileName" alt="" style="height: 180px">
           </el-col>
         </template>
       </el-table-column>
@@ -71,6 +71,7 @@
   import Vue from 'vue'
   import { mapState, mapGetters } from 'vuex'
   import Component from 'vue-class-component'
+  import { MY_PHP_SERVICE } from '../api/config'
 
   @Component({
     computed: {
@@ -86,6 +87,7 @@
   })
   export default class searchMain extends Vue {
     // data
+    serverAddress = MY_PHP_SERVICE
     currentBrands = []
 
     // method
