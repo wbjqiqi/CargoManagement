@@ -6,8 +6,10 @@ var storage = multer.diskStorage({
   },
   //给上传文件重命名，获取添加后缀名
   filename: function (req, file, cb) {
+    // cb(null, id);
     let id = req.params.id
-    cb(null, id);
+    let type = file.mimetype.split('/')[1]
+    cb(null, `${id}.${type}`)
   }
 });
 //添加配置文件到muler对象。

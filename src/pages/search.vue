@@ -161,6 +161,9 @@
 
     submitCargo (info) {
       let data = info.model
+      if (info.fileName) {
+        data.fileName = info.fileName
+      }
       if (info.isEdit) {
         this.updateCargo(data).then((res) => {
           this.closeThisDialog()
@@ -173,19 +176,13 @@
         delete data.id
         this.newCargoAction(data).then((res) => {
           this.closeThisDialog()
-          this.uploadImage(info.upload, res.id)
+//          this.uploadImage(info.upload, res.id)
           MessageHelper.successMessage('添加成功')
           this.handleSelect(res)
         }).catch(() => {
           MessageHelper.errorMessage('添加失败')
         })
       }
-    }
-
-    uploadImage (upload, id) {
-      upload.action = this.serverAddress + '/goods/file-upload/' + id
-      console.log(upload)
-      upload.submit()
     }
 
     deleteCargo (id) {

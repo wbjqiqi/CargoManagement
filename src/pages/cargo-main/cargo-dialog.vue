@@ -1,6 +1,6 @@
 <template>
   <el-dialog size="small" :title="isEdit?'编辑':'新建'" v-model="openDialog" :beforeClose="closeDialog">
-    <el-form @keyup.enter.native="validateData" labelPosition="left" :model="goods"
+    <el-form @keyup.enter.native="uploadImage" labelPosition="left" :model="goods"
              ref="clientBox" :rules="validator">
       <el-form-item label="商品品牌" prop="brand">
         <el-radio-group v-model="goods.brand" v-for="label in getBrandType" :key="label.text">
@@ -26,10 +26,9 @@
         <el-col :span="12">
           <el-upload
             class="upload-demo"
-            :action="''"
+            :action="actionAddress"
             :drag="true"
-            :on-remove="handleRemove"
-            limit="1"
+            :limit="1"
             ref="upload"
             list-type="picture-card"
             :auto-upload="false"
@@ -42,7 +41,7 @@
         </el-col>
         <el-col :span="6" style="text-align: center">
           <img class="cargo-img"
-               :src="imgAddress"
+               :src="imgAddress || '/images/' + goods.fileName"
                alt="">
         </el-col>
       </el-form-item>
@@ -57,7 +56,7 @@
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeDialog">取 消</el-button>
       <el-button type="primary"
-                 @click="validateData">确 定
+                 @click="uploadImage">确 定
       </el-button>
     </div>
   </el-dialog>
@@ -66,6 +65,7 @@
 <script lang="ts">
   import { Component, Emit, Provide, Prop, Vue, Watch } from 'vue-property-decorator'
   import { Getter } from 'vuex-class'
+  import { MY_PHP_SERVICE } from '../../api/config'
 
   const validName = (rule, value, callback) => {
     if (value === '') {
@@ -81,6 +81,7 @@
     goods
     @Prop()
     isOpenDialog: boolean
+
     //    data
     @Provide()
     openDialog = false
@@ -106,27 +107,43 @@
     fileList = []
     @Provide()
     imgAddress = ''
+    @Provide()
+    serverAddress = MY_PHP_SERVICE + '/goods/file-upload/'
+    @Provide()
+    actionAddress = ''
 
     @Getter('getBrandType') getBrandType
 
     //    methods
-    validateData () {
+    uploadImage () {
       console.log(this.$refs.upload)
+      let upload = this.$refs.upload
+      let uploadFiles = upload['uploadFiles']
+      if (uploadFiles.length) {
+        let uploadFile = uploadFiles[uploadFiles.length - 1]
+        let type = uploadFile.raw.type.split('/')[1]
+        upload['uploadFiles'] = [uploadFile]
+        this.validateData(`${uploadFile.uid}.${type}`)
+        upload['submit']()
+      } else {
+        this.validateData()
+      }
+    }
+
+    validateData (fileName?) {
+      // 为了只上传最后一张
+//      this.fileList = [this.fileList[this.fileList.length - 1]]
       let data = {
         model: this.$refs.clientBox['model'],
         isEdit: this.isEdit,
-        upload: this.$refs.upload
+        fileName: fileName
       }
-      //      this.$refs.clientBox['validate']((valide) => {
-      //        console.log(valide)
-      //        if (valide) {
+//            this.$refs.clientBox['validate']((valide) => {
+//              console.log(valide)
+//              if (valide) {
       this.submitCargo(data)
       //        }
       //      })
-    }
-
-    handleRemove (file, fileList) {
-      console.log(file, fileList)
     }
 
     closeDialog () {
@@ -134,7 +151,9 @@
     }
 
     changImage (file, fileList) {
+      console.log(file)
       this.imgAddress = file.url
+      this.actionAddress = this.serverAddress + file.uid
     }
 
     @Emit()
