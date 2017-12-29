@@ -2,7 +2,6 @@
  * Created by Administrator on 2017/8/28 0028.
  */
 import * as types from '../mutation-types'
-import StorageUpload from '../../common/storage-upload'
 
 const state = {
   goods: [],
@@ -41,16 +40,6 @@ const mutations = {
   // },
   [types.GET_GOODS] (state, allGoods) {
     state.goods = allGoods
-    let storageUpload = new StorageUpload()
-    allGoods.map((item, index) => {
-      storageUpload.getStorage('cargo_management_cargo_img', item.id).then((res) => {
-        console.log(res)
-        if (res.imageData) {
-          let buffer = new Buffer(res.imageData[0].data)
-        }
-        // state.goods[index].imageData = res.data
-      })
-    })
   },
   [types.GET_TYPES] (state, allTypes) {
     let allBrands = []
