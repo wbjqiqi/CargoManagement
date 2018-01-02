@@ -39,6 +39,7 @@
   import { MessageHelper } from '../utils/message-helper'
   import { ConfirmHelper } from '../utils/confirm-helper'
   import { MY_PHP_SERVICE } from '../api/config'
+  import { CommonFunction } from '../common/common'
 
   @Component({
     components: {
@@ -57,17 +58,7 @@
     @Provide()
     timeout = null
     @Provide()
-    goods = {
-      id: '',
-      name: '',
-      brand: '',
-      specific: '',
-      number: '',
-      price: '',
-      remark: '',
-      rest: '',
-      image: ''
-    }
+    goods = CommonFunction.resetCargoMain()
     @Provide()
     isEdit = false
     @Provide()
@@ -129,17 +120,7 @@
     }
 
     resetGoods () {
-      this.goods = {
-        id: '',
-        name: '',
-        brand: '',
-        specific: '',
-        number: '',
-        price: '',
-        remark: '',
-        rest: '',
-        image: ''
-      }
+      this.goods = CommonFunction.resetCargoMain()
     }
 
     newCargo () {
@@ -161,7 +142,7 @@
 
     submitCargo (info) {
       let data = info.model
-      if (info.fileName) {
+      if (info.fileName && (info.fileName !== '')) {
         data.fileName = info.fileName
       }
       if (info.isEdit) {
@@ -174,9 +155,9 @@
         })
       } else {
         delete data.id
+        console.log(data)
         this.newCargoAction(data).then((res) => {
           this.closeThisDialog()
-//          this.uploadImage(info.upload, res.id)
           MessageHelper.successMessage('添加成功')
           this.handleSelect(res)
         }).catch(() => {

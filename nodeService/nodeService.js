@@ -4,9 +4,9 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const connection = require('./mysql/mysql')
 const fs = require('fs')
 const uploadController = require('./uploadController')
+var path = require('path')
 const connection = require('./mysql/mysql')
 
 connection.connect()
@@ -22,15 +22,18 @@ connection.connect()
 // }
 
 // 设置跨域访问
+// function allowOrigin () {
 app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Headers', 'X-Requested-With, accept, origin, content-type')
   res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS')
   res.header('X-Powered-By', ' 3.2.1')
-  res.header('Content-Type', 'application/json;charset=utf-8')
+  // res.header('Content-Type', 'application/json;charset=utf-8')
   // res.header('Content-Type', 'multipart/form-data;charset=utf-8')
-  next()
+  return next()
 })
+// }
+
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -44,6 +47,7 @@ app.route('/goods')
       }
       res.status(200)
       res.send(results)
+      return
     })
   })
   .post((req, res) => {
@@ -53,10 +57,12 @@ app.route('/goods')
     var str = '\'' + id + '\','
     for (i in options) {
       key += '`' + i + '`,'
-      str += '\'' + options[i] + '\','
+      let value = options[i].split('\'').join()
+      str += '\'' + value + '\','
     }
     key = key.substring(0, key.length - 1)
     str = str.substring(0, str.length - 1)
+    console.log('INSERT INTO GOODS_MESSAGE (' + key + ') VALUES (' + str + ')')
     connection.query('INSERT INTO GOODS_MESSAGE (' + key + ') VALUES (' + str + ')', (error, results, failed) => {
       if (error) {
         res.status(500)
@@ -71,6 +77,7 @@ app.route('/goods')
       }
 
     })
+    return
   })
 app.route('/goods/types')
   .get((req, res) => {
@@ -82,6 +89,7 @@ app.route('/goods/types')
       res.status(200)
       res.send(results)
     })
+    return
   })
   .put((req, res) => {
     var name = req.body.name
@@ -98,8 +106,8 @@ app.route('/goods/types')
         res.status(500)
         res.send({msg: 'failed'})
       }
-
     })
+    return
   })
 app.route('/goods/types/:name')
   .get((req, res) => {
@@ -112,6 +120,7 @@ app.route('/goods/types/:name')
       res.status(200)
       res.send(results)
     })
+    return
   })
 app.route('/goods/types/id/:id')
   .delete((req, res) => {
@@ -133,6 +142,7 @@ app.route('/goods/types/id/:id')
         res.send({msg: 'failed'})
       }
     })
+    return
   })
 app.route('/goods/:name')
   .get((req, res) => {
@@ -145,6 +155,7 @@ app.route('/goods/:name')
       res.status(200)
       res.send(results)
     })
+    return
   })
 app.route('/goods/detail/:name')
   .get((req, res) => {
@@ -157,6 +168,7 @@ app.route('/goods/detail/:name')
       res.status(200)
       res.send(results)
     })
+    return
   })
 app.route('/goods/keycode/:name')
   .get((req, res) => {
@@ -169,6 +181,7 @@ app.route('/goods/keycode/:name')
       res.status(200)
       res.send(results)
     })
+    return
   })
 app.route('/goods/id/:cargoId')
   .get((req, res) => {
@@ -177,14 +190,17 @@ app.route('/goods/id/:cargoId')
       if (error) {
         res.status(500)
         res.send({msg: 'failed'})
+        return
       }
-      connection.query('UPDATE `goods_message` SET `searchCount` = searchCount + 1 WHERE `goods_message`.`id` = ' + id, function () {
+      let searchCount = results.searchCount
+      connection.query('UPDATE `goods_message` SET `searchCount` = ' + (searchCount + 1) + ' WHERE `goods_message`.`id` = ' + id, function () {
         res.status(200)
         res.send(results)
       })
     })
+    return
   })
-  .post((req, res) => {
+  .put((req, res) => {
     var id = req.params.cargoId
     var options = req.body
     var str = 'UPDATE `goods_message` SET '
@@ -192,12 +208,13 @@ app.route('/goods/id/:cargoId')
       str += '`' + i + '`=\'' + options[i] + '\','
     }
     str = str.substring(0, str.length - 1)
-    connection.query(str + ' WHERE id=' + id, (error, results, failed) => {
+    console.log(str + ' WHERE id=' + id)
+    connection.query(str + ' WHERE id= \'' + id + '\'', (error, results, failed) => {
       if (error) {
         res.status(500)
         res.send({msg: 'failed'})
       }
-      if (results.affectedRows) {
+      if (results && results.affectedRows) {
         var response = {
           msg: 'success'
         }
@@ -208,6 +225,7 @@ app.route('/goods/id/:cargoId')
         res.send({msg: 'failed'})
       }
     })
+    return
   })
   .delete((req, res) => {
     var id = req.params.cargoId
@@ -228,38 +246,28 @@ app.route('/goods/id/:cargoId')
         res.send({msg: 'failed'})
       }
     })
+    return
   })
 
 app.post('/goods/file-upload/:id', uploadController.dataInput, () => {
-
+  return
 })
-// app.post('/goods/file-upload', (req, res) => {
-//   console.log(req.files)
-//   var chunks = []
-//   var size = 0
-//   req.on('data', function (chunk) {
-//     chunks.push(chunk)
-//     size += chunk.length
-//   })
-//   req.on('end', function () {
-//     var buffer = Buffer.concat(chunks, size)
-//     console.log(buffer)
-//   })
-//   console.log(size)
-//   // // 获得文件的临时路径
-//   // var tmp_path = req.files.thumbnail.path;
-//   // // 指定文件上传后的目录 - 示例为"images"目录。
-//   // var target_path = './images/' + req.files.thumbnail.name;
-//   // // 移动文件
-//   // fs.rename(tmp_path, target_path, function (err) {
-//   //   if (err) throw err
-//   //   // 删除临时文件夹文件,
-//   //   fs.unlink(tmp_path, function () {
-//   //     if (err) throw err
-//   //     res.send('File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes')
-//   //   })
-//   // })
-// })
+
+function getFilePath (filename) {
+  return path.join(__dirname, '/images', filename || 'default.jpg')
+}
+
+app.get('/images/:filename', (req, res) => {
+  var filePath = getFilePath(req.params.filename)
+  console.log(filePath)
+  fs.exists(filePath, function (exists) {
+    if (!exists) {
+      filePath = getFilePath()
+    }
+    res.sendfile(filePath)
+  })
+  return
+})
 
 const server = app.listen(3000, function () {
   let host = server.address().address

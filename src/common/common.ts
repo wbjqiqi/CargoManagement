@@ -17,6 +17,19 @@ class CommonFunction {
       }
     })
   }
+
+  public static resetCargoMain () {
+    return {
+      id: '',
+      name: '',
+      brand: '',
+      specific: '',
+      number: '',
+      price: '',
+      remark: '',
+      rest: ''
+    }
+  }
 }
 
 export {

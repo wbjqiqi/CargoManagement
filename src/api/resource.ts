@@ -10,7 +10,7 @@ const searchByAllName = (name) => axios.get(config.MY_PHP_SERVICE + '/goods/deta
 const searchByKeycode = (name) => axios.get(config.MY_PHP_SERVICE + '/goods/keycode/' + name);
 const searchById = (id) => axios.get(config.MY_PHP_SERVICE + '/goods/id/' + id);
 const newCargo = (options) => axios.post(config.MY_PHP_SERVICE + '/goods', options);
-const updateCargo = (options) => axios.post(config.MY_PHP_SERVICE + '/goods/id/' + options.id, options);
+const updateCargo = (options) => axios.put(config.MY_PHP_SERVICE + '/goods/id/' + options.id, options);
 const deleteCargo = (id) => axios.delete(config.MY_PHP_SERVICE + '/goods/id/' + id);
 
 const getBucket = () => axios.get(config.MY_PHP_SERVICE + '/buckets');
