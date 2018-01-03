@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="search-main">
     <el-table
       :data="Goods.goods"
       style="width: 100%">
@@ -39,7 +39,7 @@
         label="商品名称"
         prop="name">
       </el-table-column>
-      <el-table-column prop='brand' sortable
+      <el-table-column prop="brand" sortable
                        label="商品品牌"
                        :filters="currentBrands"
                        :filter-method="filterTag"
@@ -57,7 +57,7 @@
       </el-table-column>
       <el-table-column label="编辑">
         <template slot-scope="scope">
-          <el-button type="primary" icon="edit" size="small" @click="editCargo(scope.row.id)">编辑</el-button>
+          <el-button type="primary" icon="edit" size="small" @click="editCargo(scope.row)">编辑</el-button>
           <el-button type="danger" icon="delete" size="small" @click="deleteCargo(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -110,38 +110,44 @@
       })
     }
 
-    editCargo (id) {
-      this.$emit('edit-cargo', id)
+    editCargo (cargo) {
+      this.$emit('edit-cargo', cargo)
     }
 
     deleteCargo (id) {
       this.$emit('delete-cargo', id)
     }
+
     newCargo () {
       this.$emit('new-cargo')
     }
+
     getAllCargo () {
       this.$emit('get-all-cargo')
     }
+
     addBrandType () {
       this.$emit('add-brand-type')
     }
+
     // created
   }
 </script>
-<style>
-  .demo-table-expand {
-    font-size: 0;
-  }
+<style lang="less" type="text/less">
+  .search-main {
+    .demo-table-expand {
+      font-size: 0;
+    }
 
-  .demo-table-expand label {
-    width: 90px;
-    color: #99a9bf;
-  }
+    .demo-table-expand label {
+      width: 90px;
+      color: #99a9bf;
+    }
 
-  .demo-table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
+    .demo-table-expand .el-form-item {
+      margin-right: 0;
+      margin-bottom: 0;
+      width: 50%;
+    }
   }
 </style>

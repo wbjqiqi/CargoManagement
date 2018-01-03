@@ -6,6 +6,7 @@
         <el-row>
           <el-col :span="24" id="input">
             <el-autocomplete
+              class="search-box"
               v-model="state4"
               :fetch-suggestions="querySearchAsync"
               placeholder="请输入内容"
@@ -129,9 +130,8 @@
       this.openDialog()
     }
 
-    editCargo (id) {
-      this.searchByIdAction(id)
-      this.goods = this['Goods'].goods[0]
+    editCargo (cargo) {
+      this.goods = cargo
       this.isEdit = true
       this.openDialog()
     }
@@ -155,11 +155,10 @@
         })
       } else {
         delete data.id
-        console.log(data)
         this.newCargoAction(data).then((res) => {
           this.closeThisDialog()
           MessageHelper.successMessage('添加成功')
-          this.handleSelect(res)
+          this.getAllCargo()
         }).catch(() => {
           MessageHelper.errorMessage('添加失败')
         })
@@ -201,6 +200,9 @@
     margin: auto;
   }
 
+  .search #input .search-box{
+    display: block;
+  }
   .search-router {
     margin-top: 100px;
   }

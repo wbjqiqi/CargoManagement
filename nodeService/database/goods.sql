@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 2018-01-02 18:21:46
+-- Generation Time: 2018-01-03 18:17:41
 -- 服务器版本： 10.1.19-MariaDB
 -- PHP Version: 5.6.28
 
@@ -59,21 +59,19 @@ CREATE TABLE `goods_message` (
   `searchCount` int(100) NOT NULL,
   `keycode` varchar(100) COLLATE utf8mb4_bin NOT NULL,
   `fileName` varchar(40) COLLATE utf8mb4_bin NOT NULL,
-  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `active` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 --
 -- 转存表中的数据 `goods_message`
 --
 
-INSERT INTO `goods_message` (`id`, `name`, `brand`, `remark`, `price`, `number`, `rest`, `specific`, `searchCount`, `keycode`, `fileName`, `create_at`) VALUES
-('3naf72fqi5dinibz5pfpw4s4i', '牛奶', '伊利', '牛奶', '234', '23', '234', '23', 0, 'nn7', '1514913633851.jpeg', '2018-01-01 15:57:32'),
-('3oavcc9wcchlsi2wfsglc2qpvi', '4', '优惠', '4', '4', '4', '4', '4', 0, '4', '1514913654874.jpeg', '2018-01-02 08:56:30'),
-('6zp9mlvuqr496vjhxc8404fgvi', 'rrr', '伊利', '333', '', '', '', '', 0, '33', '1514910730294.jpeg', '2018-01-02 16:42:24'),
-('bhm11lt8zv44fjkltw5k8uayvi', 'EEE', '伊利', '33', '33', '33', '33', 'EE', 0, '33', '1514912248195.jpeg', '2018-01-02 16:57:29'),
-('n6olq636gp0yewzddexapds4i', '哇哈哈', '伊利', '好喝', '7', '6', '300', '瓶', 0, '', '', '2017-11-23 14:51:59'),
-('qswpfummr8q5uidyjls7nwmi', '333', '伊利', '333', '333', '333', '333', '333', 0, '333', '', '2017-11-23 14:51:59'),
-('vz39l3caiy79zvco5lz4u0udi', '空调', '优惠', '33', '22', '33', '22', '22', 0, 'kt', '', '2017-11-23 14:51:59');
+INSERT INTO `goods_message` (`id`, `name`, `brand`, `remark`, `price`, `number`, `rest`, `specific`, `searchCount`, `keycode`, `fileName`, `create_at`, `active`) VALUES
+('51d5ri6j6xs5ozdnzyd9m5cdi', '222', '优惠', '222', '222', '222', '222', '222', 0, '222', '1514998724934.jpeg', '2018-01-01 16:47:19', 0),
+('d1vqnt53gxdaye0fdxowjc3di', '惹让他', '优惠', '岁的法国', '豆腐干', '岁的法国', '顺丰大概', '豆腐干', 0, '岁的法国', '1514999592567.jpeg', '2018-01-03 17:13:16', 0),
+('e7fxept8dl615hh2cq0n3ik9', '342524', '蒙牛', '24352', '2345', '2345', '2435', '2345', 0, '23452', '1514999008648.png', '2018-01-03 17:03:31', 0),
+('v6qlw2tovpxbmbmm1ap6nu3di', '222333', '优惠', '12343124', '12341', '2341', '12341234', '222333', 0, '12341234', '1514998983105.jpeg', '2018-01-03 17:03:07', 0);
 
 --
 -- Indexes for dumped tables

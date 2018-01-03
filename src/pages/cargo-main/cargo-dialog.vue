@@ -1,5 +1,5 @@
 <template>
-  <el-dialog size="small" :title="isEdit?'编辑':'新建'" v-model="openDialog" :beforeClose="closeDialog" v-if="openDialog">
+  <el-dialog size="small" :title="isEdit?'编辑':'新建'" v-model="openDialog" :before-close="closeDialog" @open="resetImage">
     <el-form @keyup.enter.native="uploadImage" labelPosition="left" :model="goods"
              ref="clientBox">
       <el-form-item label="商品品牌" prop="brand">
@@ -143,9 +143,12 @@
       this.submitCargo(data)
     }
 
+    resetImage () {
+      this.imgAddress = ''
+    }
+
     closeDialog () {
       this.isUploadImage = false
-      this.imgAddress = ''
       this.$refs.upload['clearFiles']()
       this.$emit('closeDialog')
     }

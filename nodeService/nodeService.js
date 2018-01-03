@@ -62,7 +62,7 @@ app.route('/goods')
     }
     key = key.substring(0, key.length - 1)
     str = str.substring(0, str.length - 1)
-    console.log('INSERT INTO GOODS_MESSAGE (' + key + ') VALUES (' + str + ')')
+    // console.log('INSERT INTO GOODS_MESSAGE (' + key + ') VALUES (' + str + ')')
     connection.query('INSERT INTO GOODS_MESSAGE (' + key + ') VALUES (' + str + ')', (error, results, failed) => {
       if (error) {
         res.status(500)
@@ -204,54 +204,95 @@ app.route('/goods/id/:cargoId')
     var id = req.params.cargoId
     var options = req.body
     var str = 'UPDATE `goods_message` SET '
+    var fileName = ''
     for (i in options) {
-      str += '`' + i + '`=\'' + options[i] + '\','
+      if (i === 'fileName') {
+        fileName = options[i]
+      }
+      let value = options[i]
+      if (typeof value === 'string') {
+        value = options[i].split('\'').join()
+      }
+      str += '`' + i + '`=\'' + value + '\','
     }
-    str = str.substring(0, str.length - 1)
-    console.log(str + ' WHERE id=' + id)
-    connection.query(str + ' WHERE id= \'' + id + '\'', (error, results, failed) => {
-      if (error) {
-        res.status(500)
-        res.send({msg: 'failed'})
-      }
-      if (results && results.affectedRows) {
-        var response = {
-          msg: 'success'
+    getFileName(id, (name) => {
+      str = str.substring(0, str.length - 1)
+      // console.log(str + ' WHERE id=' + id)
+      connection.query(str + ' WHERE id= \'' + id + '\'', (error, results, failed) => {
+        if (error) {
+          res.status(500)
+          res.send({msg: 'failed'})
         }
-        res.status(200)
-        res.send(response)
-      } else {
-        res.status(500)
-        res.send({msg: 'failed'})
-      }
+        if (results && results.affectedRows) {
+          var response = {
+            msg: 'success'
+          }
+          // console.log('name', name)
+          // console.log('fileName', fileName.trim())
+          if (name !== fileName) {
+            deleteFile(name)
+          }
+          res.status(200)
+          res.send(response)
+        } else {
+          res.status(500)
+          res.send({msg: 'failed'})
+        }
+      })
+      return
     })
-    return
   })
   .delete((req, res) => {
     var id = req.params.cargoId
     var str = 'DELETE FROM `goods_message` WHERE id=\'' + id + '\''
-    connection.query(str, (error, results, failed) => {
-      if (error) {
-        res.status(500)
-        res.send({msg: 'failed'})
-      }
-      if (results.affectedRows) {
-        var response = {
-          msg: 'success'
+    getFileName(id, (name) => {
+      connection.query(str, (error, results, failed) => {
+        if (error) {
+          res.status(500)
+          res.send({msg: 'failed'})
         }
-        res.status(200)
-        res.send({id: id})
-      } else {
-        res.status(500)
-        res.send({msg: 'failed'})
-      }
+        if (results.affectedRows) {
+          var response = {
+            msg: 'success'
+          }
+          deleteFile(name)
+          res.status(200)
+          res.send({id: id})
+        } else {
+          res.status(500)
+          res.send({msg: 'failed'})
+        }
+      })
+      return
     })
-    return
   })
 
 app.post('/goods/file-upload/:id', uploadController.dataInput, () => {
   return
 })
+
+function getFileName (id, callback) {
+  connection.query('SELECT fileName FROM GOODS_MESSAGE WHERE id = \'' + id + '\'', (errpr, result, failed) => {
+    if (result.length) {
+      let str = String(result[0].fileName)
+      callback(str)
+    }
+  })
+}
+
+function deleteFile (filename) {
+  // console.log(filename)
+  var path = getFilePath(filename)
+  // console.log(path)
+  fs.exists(path, function (exists) {
+    // console.log(exists)
+    if (exists) {
+      fs.unlinkSync(path)
+      // console.log(true)
+    }
+  })
+  return
+}
 
 function getFilePath (filename) {
   return path.join(__dirname, '/images', filename || 'default.jpg')
@@ -259,7 +300,6 @@ function getFilePath (filename) {
 
 app.get('/images/:filename', (req, res) => {
   var filePath = getFilePath(req.params.filename)
-  console.log(filePath)
   fs.exists(filePath, function (exists) {
     if (!exists) {
       filePath = getFilePath()
